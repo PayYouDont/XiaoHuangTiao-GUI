@@ -3,18 +3,13 @@ package com.payudon.gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -38,62 +33,6 @@ public class MainJFrame extends JFrame{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	public void setJPanel(JPanel panel) {
-		panel.setLayout(null);
-		panel.setBackground(new Color(0,0,0,0));
-		//panel.setBackground(Color.black);
-		JLabel urlLabel = new JLabel("Todo");
-		urlLabel.setBounds(10, 45, 80, 25);
-		panel.add(urlLabel);
-		//json字符串输入区域
-		PlaceholderJTextArea codeArea = new PlaceholderJTextArea();
-		codeArea.setPlaceholder("{\"data\":\"test\"}");
-		codeArea.setBorder(getBorder(new Color(0F, 0F, 0F, 0F)));
-		codeArea.setName("codeArea");
-		codeArea.setLineWrap(true);
-		JScrollPane codeScrollPane1 = new JScrollPane(codeArea);
-		codeScrollPane1.setBounds(100,35, 400, 150);
-		codeScrollPane1.setBorder(getBorder(Color.gray));
-		panel.add(codeScrollPane1);
-		
-		JLabel resultLabel = new JLabel("java代码:");
-		resultLabel.setBounds(10, 225, 80, 25);
-		panel.add(resultLabel);
-		//返回结果框
-		JTextArea resultArea = new JTextArea();
-		resultArea.setBorder(getBorder(new Color(0F, 0F, 0F, 0F)));
-		resultArea.setName("resultArea");
-		resultArea.setLineWrap(true);
-		JScrollPane scrollPane = new JScrollPane(resultArea);
-		scrollPane.setBounds(100, 225, 400, 150);
-		scrollPane.setBorder(getBorder(Color.gray));
-		panel.add(scrollPane);
-		
-		JButton button = new JButton("生成Java实体");
-		button.setBounds(100, 385, 150, 25);
-		button.setFocusable(false);
-		panel.add(button);
-		button.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				create(panel);
-			}
-		});
-		JButton copyBtn = new JButton("复制内容");
-		copyBtn.setBounds(350, 385, 150, 25);
-		copyBtn.setFocusable(false);
-		panel.add(copyBtn);
-		/*copyBtn.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard(); 
-				Transferable tText = new StringSelection(javaBeanStr);  
-				clip.setContents(tText, null);
-				JOptionPane.showMessageDialog(panel, "已复制到剪贴板");
-			}
-		});*/
-		addFocusListener(panel);
 	}
 	
 	public static void create(JPanel panel) {
@@ -159,10 +98,7 @@ public class MainJFrame extends JFrame{
 		//关闭窗体后终止程序
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		dispose();
-		//创建面板，这个类似于 HTML 的 div 标签
-		JPanel div = new JPanel();
-		setJPanel(div);
-		add(div);
+		add(new MainPanel());
 		// 设置界面可见
 		setVisible(true);
 		// Frame在窗体居中
