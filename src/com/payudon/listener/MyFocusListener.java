@@ -8,7 +8,7 @@ import java.awt.event.FocusListener;
 import javax.swing.JComponent;
 import javax.swing.JTextArea;
 
-import com.payudon.gui.MainJFrame;
+import com.payudon.util.ComponentUtil;
 
 
 /** 
@@ -36,7 +36,7 @@ public class MyFocusListener implements FocusListener{
 			if(c instanceof JTextArea) {
 				c = c.getParent().getParent();
 			}
-			((JComponent)c).setBorder(MainJFrame.getBorder(new Color(51, 135, 255)));
+			((JComponent)c).setBorder(ComponentUtil.getBorder(new Color(51, 135, 255)));
 		}
 	}
 
@@ -56,7 +56,7 @@ public class MyFocusListener implements FocusListener{
 			if(c instanceof JTextArea) {
 				c = c.getParent().getParent();
 			}
-			((JComponent)c).setBorder(MainJFrame.getBorder(Color.gray));
+			((JComponent)c).setBorder(ComponentUtil.getBorder(Color.gray));
 		}
 	}
 	
