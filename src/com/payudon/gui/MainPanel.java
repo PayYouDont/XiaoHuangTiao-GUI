@@ -144,7 +144,7 @@ public class MainPanel extends JPanel{
 		if(count>0) {
 			Component[] components = textPanel.getComponents();
 			jtp = (JPanel) components[--count];
-			String content = ((JTextArea)jtp.getComponents()[1]).getText();
+			String content = ((JTextArea)jtp.getComponents()[1]).getText().trim();
 			while(content.isEmpty()) {
 				if(count==0) {
 					jtp = null;
@@ -182,19 +182,12 @@ public class MainPanel extends JPanel{
 		input.addKeyListener(new KeyAdapter() {
 			@Override  
             public void keyReleased(KeyEvent e) {  
-                try {  
-                    Rectangle rect = input.modelToView(input.getText().length());  
-                    Dimension size = new Dimension(textPanel.getWidth()-20, Math.max(30,rect.y + rect.height));
-                    text.setSize(size);
-                    input.setSize(size); 
-                } catch (BadLocationException e1) {  
-                    e1.printStackTrace();  
-                } 
+				setJTextAreaSize(text, input);
             }  
 		});
 		input.addMouseListener(new MouseAdapter() {
 			public void mouseExited(MouseEvent e) {
-				if(input.getText().isEmpty()) {
+				if(input.getText().trim().isEmpty()) {
 					textPanel.remove(text);
 				}
 			}
@@ -205,10 +198,25 @@ public class MainPanel extends JPanel{
 		ComponentUtil.refresh(textPanel);
 		refresh();
 	}
+	private void setJTextAreaSize(JPanel text,JTextArea input) {
+		try {  
+            Rectangle rect = input.modelToView(input.getText().length());  
+            Dimension size = new Dimension(textPanel.getWidth()-20, Math.max(30,rect.y + rect.height));
+            text.setSize(size);
+            input.setSize(size); 
+        } catch (BadLocationException e1) {  
+            e1.printStackTrace();  
+        } 
+	}
 	public void refreshlSize(Dimension dimension) {
 		topPanelShow();
 		topPanel.setSize(dimension);
 		textPanel.setSize(dimension.width-20,dimension.height);
+		for (Component c : textPanel.getComponents()) {
+			JPanel text = (JPanel)c;
+			JTextArea input = (JTextArea)text.getComponents()[1];
+			setJTextAreaSize(text, input);
+		}
 		lock.setLocation(dimension.width-115,25);
 		synchronize.setLocation(dimension.width-85,25);
 		setting.setLocation(dimension.width-55,25);
