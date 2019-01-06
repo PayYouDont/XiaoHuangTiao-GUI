@@ -44,10 +44,12 @@ public class MoveWindowListener extends MouseAdapter {
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
+		JFrame c = (JFrame) e.getComponent();
 		if(isResetSize(e)) {
+			MainPanel mainPanel = (MainPanel)c.getContentPane();
+			mainPanel.refreshlSize(c.getSize());
 			return;
 		}
-		Component c = e.getComponent();
 		Point point = e.getLocationOnScreen();
 		int offsetX = point.x - lastPoint.x;
 		int offsetY = point.y - lastPoint.y;
