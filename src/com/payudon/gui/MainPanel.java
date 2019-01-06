@@ -22,7 +22,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
-import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 
 import com.payudon.util.ComponentUtil;
@@ -141,17 +140,17 @@ public class MainPanel extends JPanel{
 	}
 	private void addInput() {
 		int count = textPanel.getComponentCount();
-		JTextPane jtp = null; 
+		JPanel jtp = null; 
 		if(count>0) {
 			Component[] components = textPanel.getComponents();
-			jtp = (JTextPane) components[--count];
+			jtp = (JPanel) components[--count];
 			String content = ((JTextArea)jtp.getComponents()[1]).getText();
 			while(content.isEmpty()) {
 				if(count==0) {
 					jtp = null;
 					break;
 				}
-				jtp = (JTextPane) components[--count];
+				jtp = (JPanel) components[--count];
 				content = ((JTextArea)jtp.getComponents()[1]).getText();
 			}
 		}
@@ -159,7 +158,7 @@ public class MainPanel extends JPanel{
 		if(jtp!=null) {
 			TextHeight = jtp.getY()+jtp.getHeight();
 		}
-		JTextPane text = new JTextPane();
+		JPanel text = new JPanel();
 		text.setBackground(transparentColor);
 		text.setSize(textPanel.getWidth()-20,30);
 		text.setLocation(10,TextHeight);
@@ -170,15 +169,16 @@ public class MainPanel extends JPanel{
 		point.setLocation(10,0);
 		text.add(point);
 		JTextArea input = new JTextArea();
-		input.setSelectionColor(transparentColor);
+		input.setBackground(transparentColor);
 		input.setSize(text.getSize());
 		input.setLocation(35,0);
 		input.setFont(new Font(null, 0, 20));
-		input.setForeground(Color.red);
+		input.setForeground(Color.white);
 		input.setLineWrap(true);
 		input.setWrapStyleWord(true);
 		input.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		input.setCaretColor(Color.red);  
+		input.setCaretColor(Color.white);  
+		input.setSelectionStart(1);
 		input.addKeyListener(new KeyAdapter() {
 			@Override  
             public void keyReleased(KeyEvent e) {  
@@ -191,6 +191,13 @@ public class MainPanel extends JPanel{
                     e1.printStackTrace();  
                 } 
             }  
+		});
+		input.addMouseListener(new MouseAdapter() {
+			public void mouseExited(MouseEvent e) {
+				if(input.getText().isEmpty()) {
+					textPanel.remove(text);
+				}
+			}
 		});
 		text.add(input);
 		textPanel.add(text);
