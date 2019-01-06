@@ -9,7 +9,6 @@ package com.payudon.gui;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
@@ -43,10 +42,9 @@ public class MainPanel extends JPanel{
 	private JLabel synchronize;
 	private JLabel setting;
 	private JPanel textPanel;
-	private final Color transparentColor = new Color(0, 0, 0,0);
 	public MainPanel(MainJFrame frame) {
 		setLayout(null);
-		setBackground(transparentColor);
+		setOpaque(false);
 		initTopPanel(frame);
 		initTextPanel(frame);
 		
@@ -56,7 +54,7 @@ public class MainPanel extends JPanel{
 		topPanel = new JPanel();
 		topPanel.setLayout(null);
 		topPanel.setSize(topSize);
-		topPanel.setBackground(transparentColor);
+		topPanel.setOpaque(false);
 		//todo
 		title = new JLabel(StyleUtil.getLabelHtml("Todo",22,true));
 		title.setName("todo");
@@ -125,8 +123,7 @@ public class MainPanel extends JPanel{
 	}
 	public void initTextPanel(MainJFrame frame) {
 		textPanel = new JPanel();
-		//textPanel.setBorder(ComponentUtil.getBorder(Color.red));
-		textPanel.setBackground(transparentColor);
+		textPanel.setOpaque(false);
 		textPanel.setLocation(0, 60);
 		textPanel.setSize(frame.getWidth()-20,frame.getHeight());
 		textPanel.setLayout(null);
@@ -159,7 +156,7 @@ public class MainPanel extends JPanel{
 			TextHeight = jtp.getY()+jtp.getHeight();
 		}
 		JPanel text = new JPanel();
-		text.setBackground(transparentColor);
+		text.setOpaque(false);
 		text.setSize(textPanel.getWidth()-20,30);
 		text.setLocation(10,TextHeight);
 		text.setLayout(null);
@@ -169,16 +166,14 @@ public class MainPanel extends JPanel{
 		point.setLocation(10,0);
 		text.add(point);
 		JTextArea input = new JTextArea();
-		input.setBackground(transparentColor);
+		input.setOpaque(false);
 		input.setSize(text.getSize());
 		input.setLocation(35,0);
 		input.setFont(new Font(null, 0, 20));
 		input.setForeground(Color.white);
 		input.setLineWrap(true);
 		input.setWrapStyleWord(true);
-		input.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		input.setCaretColor(Color.white);  
-		input.setSelectionStart(1);
+		input.setCaretColor(Color.white);
 		input.addKeyListener(new KeyAdapter() {
 			@Override  
             public void keyReleased(KeyEvent e) {  
@@ -190,13 +185,17 @@ public class MainPanel extends JPanel{
 				if(input.getText().trim().isEmpty()) {
 					textPanel.remove(text);
 				}
+				if(input.hasFocus()) {
+					input.requestFocus();
+				}
+			}
+			public void mouseEntered(MouseEvent e) {
+				
 			}
 		});
 		text.add(input);
 		textPanel.add(text);
-		ComponentUtil.refresh(text);
 		ComponentUtil.refresh(textPanel);
-		refresh();
 	}
 	private void setJTextAreaSize(JPanel text,JTextArea input) {
 		try {  
