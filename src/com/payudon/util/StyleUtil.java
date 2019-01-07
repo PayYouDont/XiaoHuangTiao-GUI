@@ -12,5 +12,4 @@ public class StyleUtil {
 		}
 		return "<html><font style=\"font-size:"+size+"px;\" face=\"verdana\">"+text+"</font></html>";
 	}
-	
 }

@@ -26,26 +26,6 @@ public class MainJFrame extends JFrame{
 			e.printStackTrace();
 		}
 	}
-	
-	/*public static void addFocusListener(JPanel panel){
-		Component[] components= panel.getComponents();
-		MyFocusListener focusListerner = new MyFocusListener();
-		for (int i = 0; i < components.length; i++) {
-			Component c = components[i];
-			if(c instanceof JScrollPane) {
-				JScrollPane pane = (JScrollPane)c;
-				c = pane.getViewport().getView();
-			}
-			c.addFocusListener(focusListerner);
-		}
-	}*/
-	
-	/*public static void changeColor(MouseEvent e,JTextField urlText) {
-		int index = e.getButton();
-		if(index==MouseEvent.BUTTON1) {//鼠标左键按下
-			urlText.setBorder(getBorder(new Color(51, 135, 255)));
-		}
-	}*/
 	public void addMouseAdapterListener(MouseAdapter mouseAdapterListener) {
 		addMouseListener(mouseAdapterListener);
 		addMouseMotionListener(mouseAdapterListener);
