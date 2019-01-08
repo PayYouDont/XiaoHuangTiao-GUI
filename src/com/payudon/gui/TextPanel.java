@@ -20,6 +20,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 
@@ -42,6 +43,8 @@ public class TextPanel extends JPanel{
 	private final TopPanel topPanel;
 	private final FuncPanel funcPanel;
 	public TextPanel(final MainJFrame frame,final TopPanel topPanel,final FuncPanel funcPanel) {
+		JScrollPane scroll = new JScrollPane();
+		scroll.setOpaque(false);
 		this.topPanel = topPanel;
 		this.funcPanel = funcPanel;
 		setOpaque(false);
@@ -59,32 +62,42 @@ public class TextPanel extends JPanel{
 				refresh();
 			}
 		});
+		scroll.setSize(getSize());
+		scroll.add(this);
 	}
 	private void addInput() {
 		int count = getComponentCount();
-		JPanel jtp = null; 
-		if(count>0) {
+		JPanel text = null;
+		int TextHeight = 0;
+		if(count==0) {
+			text = new JPanel();
+		}else {
 			Component[] components = getComponents();
-			String content = "";
-			do {
-				jtp = (JPanel) components[--count];
-				for (Component c : jtp.getComponents()) {
-					if(c instanceof JTextArea) {
-						content = ((JTextArea)c).getText().trim();
-						break;
+			for (int i = 0; i < components.length; i++) {
+				JPanel jp = (JPanel) components[i];
+				Component[] cs = jp.getComponents();
+				TextHeight = jp.getY()+jp.getHeight();
+				for (int j = 0; j < cs.length; j++) {
+					if(cs[j] instanceof JTextArea) {
+						JTextArea tja = (JTextArea)cs[j];
+						if(tja.getText().trim().isEmpty()) {
+							text = jp;
+							return;
+						}
 					}
 				}
-			} while (content.isEmpty()&&count>0);
+			}
 		}
-		int TextHeight = 0;
-		if(jtp!=null) {
-			TextHeight = jtp.getY()+jtp.getHeight();
+		if(text==null) {
+			text = new JPanel();
 		}
-		JPanel text = new JPanel();
-		text.setOpaque(false);
 		text.setSize(getWidth()-20,30);
 		text.setLocation(10,TextHeight);
+		text.setOpaque(false);
 		text.setLayout(null);
+		addText(text);
+	}
+	private void addText(JPanel text) {
 		ImageIcon pointImg = new ImageIcon("src/img/point.png");
 		JLabel point = new JLabel(pointImg);
 		point.setSize(30,30);
@@ -175,7 +188,6 @@ public class TextPanel extends JPanel{
 				if(component instanceof JTextArea) {
 					JTextArea input = (JTextArea)component;
 					setJTextAreaSize(text, input);
-					return;
 				}
 			}
 			
