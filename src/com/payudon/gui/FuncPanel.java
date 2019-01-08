@@ -15,6 +15,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.payudon.util.ComponentUtil;
+
 /** 
 * @ClassName: FuncPanel 
 * @Description: TODO(     ) 
@@ -27,8 +29,8 @@ public class FuncPanel extends JPanel{
 	* @Fields serialVersionUID : TODO(     ) 
 	*/ 
 	private static final long serialVersionUID = 1L;
-	private JPanel text;
-	public FuncPanel(JPanel text) {
+	private ContentText text;
+	public FuncPanel(ContentText text) {
 		this.text = text;
 		setSize(100,30);
 		setLocation(text.getSize().width-120,0);
@@ -41,24 +43,26 @@ public class FuncPanel extends JPanel{
 			public void mouseClicked(MouseEvent e) {
 				setVisible(true);
 				if(e.getButton()==1) {
+					TextPanel textPanel= (TextPanel) e.getComponent().getParent().getParent().getParent();
 					ImageIcon icon = (ImageIcon) top.getIcon();
 					if(icon.toString().indexOf("top")!=-1) {
 						icon = new ImageIcon("src/img/unpin.png");
-						topText();
+						topText(textPanel);
 					}else {
 						icon = new ImageIcon("src/img/top.png");
-						unpinText();
+						unpinText(textPanel);
 					}
 					top.setIcon(icon);
+					textPanel.orderText();
 					refresh();
 				}
 			}
 			public void mouseEntered(MouseEvent e) {
 				setVisible(true);
 			}
-			 public void mouseExited(MouseEvent e) {
+			public void mouseExited(MouseEvent e) {
 				 setVisible(false);
-			 }
+			}
 		});
 		add(top);
 		ImageIcon hookImg = new ImageIcon("src/img/hook.png");
@@ -68,11 +72,26 @@ public class FuncPanel extends JPanel{
 		ImageIcon deleteImg = new ImageIcon("src/img/delete.png");
 		JLabel delete = new JLabel(deleteImg);
 		delete.setBounds(60,0,100,100);
+		delete.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if(e.getButton()==1) {
+					 TextPanel textPanel= (TextPanel) e.getComponent().getParent().getParent().getParent();
+					 textPanel.remove(text);
+					 ComponentUtil.refresh(text);
+				}
+			}
+			public void mouseEntered(MouseEvent e) {
+				setVisible(true);
+			}
+			public void mouseExited(MouseEvent e) {
+				 setVisible(false);
+			}
+		});
 		add(delete);
 		setVisible(false);
 	}
 	
-	public void topText() {
+	private void topText(TextPanel textPanel) {
 		if(text!=null) {
 			ImageIcon pointImg = new ImageIcon("src/img/point_y.png");
 			for (Component c : text.getComponents()) {
@@ -82,12 +101,15 @@ public class FuncPanel extends JPanel{
 					point.setSize(30,30);
 					point.setLocation(10,0);
 					text.add(point);
+					text.setTop(true);
+					textPanel.getTopTexts().add(text);
 					break;
 				}
 			}
+			
 		}
 	}
-	public void unpinText() {
+	private void unpinText(TextPanel textPanel) {
 		if(text!=null) {
 			ImageIcon pointImg = new ImageIcon("src/img/point.png");
 			for (Component c : text.getComponents()) {
@@ -97,6 +119,8 @@ public class FuncPanel extends JPanel{
 					point.setSize(30,30);
 					point.setLocation(10,0);
 					text.add(point);
+					text.setTop(false);
+					textPanel.getTopTexts().remove(text);
 					return;
 				}
 			}
@@ -106,12 +130,5 @@ public class FuncPanel extends JPanel{
 	private void refresh() {
 		setVisible(false);
 		setVisible(true);
-	}
-	public JPanel getText() {
-		return text;
-	}
-
-	public void setText(JPanel text) {
-		this.text = text;
 	}
 }

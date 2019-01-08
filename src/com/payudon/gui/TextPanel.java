@@ -16,6 +16,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -38,6 +40,10 @@ public class TextPanel extends JPanel{
 	* @Fields serialVersionUID : TODO(     ) 
 	*/ 
 	private static final long serialVersionUID = 1L;
+	private List<Component> topTexts = new ArrayList<Component>();
+	public TextPanel() {
+		
+	}
 	public TextPanel(final MainJFrame frame) {
 		setOpaque(false);
 		setLocation(10, 60);
@@ -56,14 +62,14 @@ public class TextPanel extends JPanel{
 	}
 	private void addInput() {
 		int count = getComponentCount();
-		JPanel text = null;
+		ContentText text = null;
 		int TextHeight = 0;
 		if(count==0) {
-			text = new JPanel();
+			text = new ContentText();
 		}else {
 			Component[] components = getComponents();
 			for (int i = 0; i < components.length; i++) {
-				JPanel jp = (JPanel) components[i];
+				ContentText jp = (ContentText) components[i];
 				Component[] cs = jp.getComponents();
 				TextHeight = jp.getY()+jp.getHeight();
 				for (int j = 0; j < cs.length; j++) {
@@ -78,7 +84,7 @@ public class TextPanel extends JPanel{
 			}
 		}
 		if(text==null) {
-			text = new JPanel();
+			text = new ContentText();
 		}
 		text.setSize(getWidth()-20,30);
 		text.setLocation(10,TextHeight);
@@ -86,7 +92,7 @@ public class TextPanel extends JPanel{
 		text.setLayout(null);
 		addText(text);
 	}
-	private void addText(JPanel text) {
+	private void addText(ContentText text) {
 		FuncPanel funcPanel = new FuncPanel(text);
 		funcPanel.setName("funcPanel");
 		text.add(funcPanel);
@@ -126,6 +132,7 @@ public class TextPanel extends JPanel{
 			}
 		});
 		text.add(input);
+		text.setBorder(ComponentUtil.getBorder(Color.red));
 		add(text);
 		input.requestFocus();
 		refresh();
@@ -181,8 +188,48 @@ public class TextPanel extends JPanel{
 					setJTextAreaSize(text, input);
 				}
 			}
-			
 		}
+	}
+	public void remove(JPanel text) {
+		super.remove(text);
+		orderText();
+	}
+	public void orderText() {
+		orderTopTexts();
+		orderUnpinTexts();
+	}
+	private void orderTopTexts() {
+		if(topTexts.size()>0) {
+			Component lastText = topTexts.get(topTexts.size()-1);
+			lastText.setLocation(lastText.getX(),0);
+			add(lastText);
+			for (int i = topTexts.size()-2; i>=0; i--) {
+				Component topText = topTexts.get(i);
+				Component nextTop = topTexts.get(i+1);
+				topText.setLocation(topText.getX(),nextTop.getY()+nextTop.getHeight());
+				add(topText);
+			}
+		}
+	}
+	private void orderUnpinTexts(){
+		Component[] components = getComponents();
+		if(components.length>0) {
+			int y = topTexts.size()>0?topTexts.get(0).getY()+topTexts.get(0).getHeight():0;
+			components[0].setLocation(components[0].getX(),y);
+			for (int i = 1; i < components.length; i++) {
+				ContentText text = (ContentText) components[i];
+				ContentText beforeText = (ContentText) components[i-1];
+				if(!text.isTop()) {
+					text.setLocation(text.getX(),beforeText.getY()+beforeText.getHeight());
+				}
+			}
+		}
+	}
+	public List<Component> getTopTexts() {
+		return topTexts;
+	}
+	public void setTopTexts(List<Component> topTexts) {
+		this.topTexts = topTexts;
 	}
 	
 }
