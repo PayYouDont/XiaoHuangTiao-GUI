@@ -132,7 +132,6 @@ public class TextPanel extends JPanel{
 			}
 		});
 		text.add(input);
-		text.setBorder(ComponentUtil.getBorder(Color.red));
 		add(text);
 		input.requestFocus();
 		refresh();
