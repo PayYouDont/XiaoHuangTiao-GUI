@@ -24,8 +24,8 @@ import javax.swing.JPanel;
 */
 public class MainPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
+	private JButton close;
 	private TopPanel topPanel;
-	private FuncPanel funcPanel;
 	private TextPanel textPanel;
 	private final MainJFrame frame;
 
@@ -33,18 +33,16 @@ public class MainPanel extends JPanel{
 		this.frame = frame;
 		setLayout(null);
 		setOpaque(false);
-		funcPanel = new FuncPanel(frame);
-		add(funcPanel);
 		initColseAndAddPanel();
 		topPanel = new TopPanel(frame);
 		add(topPanel);
-		textPanel = new TextPanel(frame,topPanel,funcPanel);
+		textPanel = new TextPanel(frame);
 		add(textPanel);
 	}
 	public void initColseAndAddPanel(){
 		Dimension topSize = frame.getSize();
 		ImageIcon closeIcon = new ImageIcon("src/img/close.png");
-		JButton close = new JButton(closeIcon);
+		close = new JButton(closeIcon);
 		close.setLocation(topSize.width-25,5);
 		close.setSize(20,20);
 		close.setContentAreaFilled(false);//不绘制按钮区域
@@ -80,6 +78,7 @@ public class MainPanel extends JPanel{
 	public void refreshlSize(Dimension dimension) {
 		textPanel.refreshlSize(dimension);
 		topPanel.refreshlSize(dimension);
+		close.setLocation(topPanel.getWidth()-25,5);
 		refresh();
 	}
 	public void close() {

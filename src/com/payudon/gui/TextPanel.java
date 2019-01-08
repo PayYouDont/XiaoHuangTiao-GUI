@@ -20,7 +20,6 @@ import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 
@@ -39,16 +38,9 @@ public class TextPanel extends JPanel{
 	* @Fields serialVersionUID : TODO(     ) 
 	*/ 
 	private static final long serialVersionUID = 1L;
-	
-	private final TopPanel topPanel;
-	private final FuncPanel funcPanel;
-	public TextPanel(final MainJFrame frame,final TopPanel topPanel,final FuncPanel funcPanel) {
-		JScrollPane scroll = new JScrollPane();
-		scroll.setOpaque(false);
-		this.topPanel = topPanel;
-		this.funcPanel = funcPanel;
+	public TextPanel(final MainJFrame frame) {
 		setOpaque(false);
-		setLocation(0, 60);
+		setLocation(10, 60);
 		setSize(frame.getWidth()-20,frame.getHeight()-80);
 		setLayout(null);
 		addMouseListener(new MouseAdapter() {
@@ -58,12 +50,9 @@ public class TextPanel extends JPanel{
 			}
 			@Override
 		    public void mouseEntered(MouseEvent e) {
-				topPanel.hideOrShow(true);
 				refresh();
 			}
 		});
-		scroll.setSize(getSize());
-		scroll.add(this);
 	}
 	private void addInput() {
 		int count = getComponentCount();
@@ -98,6 +87,9 @@ public class TextPanel extends JPanel{
 		addText(text);
 	}
 	private void addText(JPanel text) {
+		FuncPanel funcPanel = new FuncPanel(text);
+		funcPanel.setName("funcPanel");
+		text.add(funcPanel);
 		ImageIcon pointImg = new ImageIcon("src/img/point.png");
 		JLabel point = new JLabel(pointImg);
 		point.setSize(30,30);
@@ -120,27 +112,26 @@ public class TextPanel extends JPanel{
 		});
 		input.addMouseListener(new MouseAdapter() {
 			public void mouseExited(MouseEvent e) {
+				funcPanel.setVisible(false);
 				if(input.getText().trim().isEmpty()) {
 					remove(text);
 				}
-				funcPanel.setVisible(false);
 			}
 			public void mouseEntered(MouseEvent e) {
-				topPanel.hideOrShow(true);
-				int y = getLocation().y+text.getLocation().y;
-				funcPanel.setText(text);
-				funcPanel.setLocation(getWidth()-100,y);
+				if(input.getText().trim().isEmpty()) {
+					return;
+				}
 				funcPanel.setVisible(true);
-				checkJPanel(funcPanel.getText());
-				ComponentUtil.refresh(funcPanel);
 				refresh();
 			}
 		});
 		text.add(input);
 		add(text);
+		input.requestFocus();
 		refresh();
 	}
 	private void setJTextAreaSize(JPanel text,JTextArea input) {
+		FuncPanel funcPanel = (FuncPanel) ComponentUtil.getCompentByName(text, "funcPanel");
 		funcPanel.setVisible(false);
 		try {  
             Rectangle rect = input.modelToView(input.getText().length());  

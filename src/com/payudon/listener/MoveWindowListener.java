@@ -70,9 +70,17 @@ public class MoveWindowListener extends MouseAdapter {
 
 	@Override
 	public void mouseExited(MouseEvent e) {
+		int x =e.getX();
+		int y = e.getY();
 		JFrame MainFrame = (JFrame) e.getComponent();
 		MainPanel MainPanel = (MainPanel) MainFrame.getContentPane();
-		MainPanel.topPanelHide();
+		int width = MainFrame.getWidth();
+		int height = MainFrame.getHeight();
+		if(x>0&&x<width&&y>0&&y<height) {
+			MainPanel.topPanelShow();
+		}else{
+			MainPanel.topPanelHide();
+		}
 		ComponentUtil.refresh(MainPanel);
 	}
 

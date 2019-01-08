@@ -27,12 +27,11 @@ public class FuncPanel extends JPanel{
 	* @Fields serialVersionUID : TODO(     ) 
 	*/ 
 	private static final long serialVersionUID = 1L;
-
 	private JPanel text;
-	
-	public FuncPanel(final MainJFrame frame) {
+	public FuncPanel(JPanel text) {
+		this.text = text;
 		setSize(100,30);
-		setLocation(frame.getSize().width-120,0);
+		setLocation(text.getSize().width-120,0);
 		setLocale(null);
 		setOpaque(false);
 		ImageIcon topImg = new ImageIcon("src/img/top.png");
@@ -57,6 +56,9 @@ public class FuncPanel extends JPanel{
 			public void mouseEntered(MouseEvent e) {
 				setVisible(true);
 			}
+			 public void mouseExited(MouseEvent e) {
+				 setVisible(false);
+			 }
 		});
 		add(top);
 		ImageIcon hookImg = new ImageIcon("src/img/hook.png");
