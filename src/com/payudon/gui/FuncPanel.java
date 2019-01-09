@@ -54,6 +54,7 @@ public class FuncPanel extends JPanel{
 					}
 					top.setIcon(icon);
 					textPanel.orderText();
+					setVisible(false);
 					refresh();
 				}
 			}
@@ -118,8 +119,8 @@ public class FuncPanel extends JPanel{
 					point.setIcon(pointImg);
 					point.setSize(30,30);
 					point.setLocation(10,0);
-					text.add(point);
 					text.setTop(false);
+					text.add(point);
 					textPanel.getTopTexts().remove(text);
 					return;
 				}

@@ -41,9 +41,7 @@ public class TextPanel extends JPanel{
 	*/ 
 	private static final long serialVersionUID = 1L;
 	private List<Component> topTexts = new ArrayList<Component>();
-	public TextPanel() {
-		
-	}
+	private List<Component> unpinTexts = new ArrayList<Component>();
 	public TextPanel(final MainJFrame frame) {
 		setOpaque(false);
 		setLocation(10, 60);
@@ -103,7 +101,7 @@ public class TextPanel extends JPanel{
 		text.add(point);
 		JTextArea input = new JTextArea();
 		input.setOpaque(false);
-		input.setSize(text.getSize());
+		input.setSize(text.getWidth()-30,text.getHeight());
 		input.setLocation(35,0);
 		input.setFont(new Font(null, 0, 20));
 		input.setForeground(Color.white);
@@ -132,43 +130,80 @@ public class TextPanel extends JPanel{
 			}
 		});
 		text.add(input);
+		text.setBorder(ComponentUtil.getBorder(Color.red));
 		add(text);
 		input.requestFocus();
 		refresh();
 	}
-	private void setJTextAreaSize(JPanel text,JTextArea input) {
+	private void setJTextAreaSize(ContentText text,JTextArea input) {
 		FuncPanel funcPanel = (FuncPanel) ComponentUtil.getCompentByName(text, "funcPanel");
 		funcPanel.setVisible(false);
 		try {  
             Rectangle rect = input.modelToView(input.getText().length());  
             Dimension size = new Dimension(getWidth()-20, Math.max(30,rect.y + rect.height));
             text.setSize(size);
-            input.setSize(size); 
+            input.setSize(text.getWidth()-30,text.getHeight()); 
+            //输入时检测是否需要扩大大小
             checkJPanel(text);
         } catch (BadLocationException e1) {  
             e1.printStackTrace();  
         } 
 	}
-	private void checkJPanel(JPanel text) {
+	private void checkJPanel(ContentText text) {
 		Component[] components = getComponents();
 		if(components.length>1) {
 			int index = 0;
-			for (int i = 0; i < components.length; i++) {
-				if(components[i].equals(text)) {
-					index = i;
-					break;
+			if(text.isTop()) {
+				for (int i = topTexts.size()-1; i>=0; i--) {
+					if(topTexts.get(i).equals(text)) {
+						index = i;
+						break;
+					}
+				}
+				sortTopText(index);
+				orderUnpinTexts();
+			}else {
+				unpinTexts = new ArrayList<>();
+				for (int i = 0; i < components.length; i++) {
+					ContentText ct = (ContentText) components[i];
+					if(!ct.isTop()) {
+						unpinTexts.add(ct);
+					}
+				}
+				for (int i = 0; i < unpinTexts.size(); i++) {
+					if(unpinTexts.get(i).equals(text)) {
+						index = i;
+						break;
+					}
+				}
+				sortUnpinTexts(index);
+			}
+		}
+	}
+	private void sortTopText(Integer index) {
+		List<Component> list = topTexts;
+		if(index>0&&index<list.size()) {
+			Component text = list.get(index);
+			Component next = list.get(index-1);
+			int increment = text.getY()+text.getHeight() - next.getY();
+			if(increment!=0) {
+				for(int i=index-1;i>=0;i--) {
+					Component component = list.get(i);
+					component.setLocation(component.getX(),component.getY()+increment);
 				}
 			}
-			if(index<components.length-1) {
-				Component nextComponent = components[index+1];
-				JPanel nextPanel = (JPanel)nextComponent;
-				int increment = text.getLocation().y+text.getHeight() - nextPanel.getLocation().y;
-				if(increment!=0) {
-					for(int i=index+1;i<components.length;i++) {
-						Component component = components[i];
-						JPanel panel = (JPanel)component;
-						panel.setLocation(panel.getLocation().x,panel.getLocation().y+increment);
-					}
+		}
+	}
+	private void sortUnpinTexts(Integer index) {
+		List<Component> list = unpinTexts;
+		if(index<list.size()-1) {
+			Component text = list.get(index);
+			Component next = list.get(index+1);
+			int increment = text.getY()+text.getHeight() - next.getY();
+			if(increment!=0) {
+				for(int i=index+1;i<list.size();i++) {
+					Component component = list.get(i);
+					component.setLocation(component.getX(),component.getY()+increment);
 				}
 			}
 		}
@@ -180,7 +215,7 @@ public class TextPanel extends JPanel{
 	public void refreshlSize(Dimension dimension) {
 		setSize(dimension.width-20,dimension.height);
 		for (Component c : getComponents()) {
-			JPanel text = (JPanel)c;
+			ContentText text = (ContentText)c;
 			for(Component component : text.getComponents()) {
 				if(component instanceof JTextArea) {
 					JTextArea input = (JTextArea)component;
@@ -201,26 +236,32 @@ public class TextPanel extends JPanel{
 		if(topTexts.size()>0) {
 			Component lastText = topTexts.get(topTexts.size()-1);
 			lastText.setLocation(lastText.getX(),0);
-			add(lastText);
 			for (int i = topTexts.size()-2; i>=0; i--) {
 				Component topText = topTexts.get(i);
-				Component nextTop = topTexts.get(i+1);
-				topText.setLocation(topText.getX(),nextTop.getY()+nextTop.getHeight());
-				add(topText);
+				Component beforeTop = topTexts.get(i+1);
+				topText.setLocation(topText.getX(),beforeTop.getY()+beforeTop.getHeight());
 			}
 		}
 	}
 	private void orderUnpinTexts(){
+		if(unpinTexts.size()==0) {
+			return;
+		}
 		Component[] components = getComponents();
-		if(components.length>0) {
+		unpinTexts = new ArrayList<>();
+		for (int i = 0; i < components.length; i++) {
+			ContentText ct = (ContentText) components[i];
+			if(!ct.isTop()) {
+				unpinTexts.add(ct);
+			}
+		}
+		if(unpinTexts.size()>0) {
+			Component firstText = unpinTexts.get(0);
 			int y = topTexts.size()>0?topTexts.get(0).getY()+topTexts.get(0).getHeight():0;
-			components[0].setLocation(components[0].getX(),y);
-			for (int i = 1; i < components.length; i++) {
-				ContentText text = (ContentText) components[i];
-				ContentText beforeText = (ContentText) components[i-1];
-				if(!text.isTop()) {
-					text.setLocation(text.getX(),beforeText.getY()+beforeText.getHeight());
-				}
+			firstText.setLocation(firstText.getX(),y);
+			for (int i = 1; i < unpinTexts.size(); i++) {
+				ContentText text = (ContentText) unpinTexts.get(i);
+				text.setLocation(text.getX(),unpinTexts.get(i-1).getY()+unpinTexts.get(i-1).getHeight());
 			}
 		}
 	}
