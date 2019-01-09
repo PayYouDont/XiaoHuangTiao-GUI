@@ -33,4 +33,13 @@ public class ComponentUtil {
 		Border border = BorderFactory.createLineBorder(color);
 		return border;
 	}
+	public static Component getParentToClass(Component c,Class<? extends Component> clazz) {
+		while (c!=null&&c.getClass()!=clazz) {
+			c = c.getParent();
+			if(c==null) {
+				break;
+			}
+		}
+		return c;
+	}
 }

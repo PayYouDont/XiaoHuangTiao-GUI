@@ -43,7 +43,9 @@ public class FuncPanel extends JPanel{
 			public void mouseClicked(MouseEvent e) {
 				setVisible(true);
 				if(e.getButton()==1) {
-					TextPanel textPanel= (TextPanel) e.getComponent().getParent().getParent().getParent();
+					//TextPanel textPanel= (TextPanel) e.getComponent().getParent().getParent().getParent();
+					TextPanel textPanel = (TextPanel) ComponentUtil.getParentToClass(e.getComponent(),TextPanel.class);
+					
 					ImageIcon icon = (ImageIcon) top.getIcon();
 					if(icon.toString().indexOf("top")!=-1) {
 						icon = new ImageIcon("src/img/unpin.png");

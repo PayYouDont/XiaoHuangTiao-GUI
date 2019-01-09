@@ -16,6 +16,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +24,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
 
 import com.payudon.util.ComponentUtil;
@@ -40,42 +43,69 @@ public class TextPanel extends JPanel{
 	* @Fields serialVersionUID : TODO(     ) 
 	*/ 
 	private static final long serialVersionUID = 1L;
-	private List<Component> topTexts = new ArrayList<Component>();
-	private List<Component> unpinTexts = new ArrayList<Component>();
+	private JPanel scroll;
+	private List<Component> topTexts = new ArrayList<>();
+	private List<Component> unpinTexts = new ArrayList<>();
+	//private List<Component> hideTexts = new ArrayList<>();
 	public TextPanel(final MainJFrame frame) {
 		setOpaque(false);
 		setLocation(10, 60);
 		setSize(frame.getWidth()-20,frame.getHeight()-80);
 		setLayout(null);
-		addMouseListener(new MouseAdapter() {
+		scroll = new JPanel();
+		scroll.setSize(getSize());
+		scroll.setOpaque(false);
+		scroll.setLocation(0,0);
+		scroll.setLayout(null);
+		scroll.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				 addInput();
+				if(e.getButton()==1) {
+					 addInput();
+				}
 			}
 			@Override
 		    public void mouseEntered(MouseEvent e) {
 				refresh();
 			}
 		});
+		scroll.addMouseWheelListener(new MouseAdapter() {
+			public void mouseWheelMoved(MouseWheelEvent e){
+				if(e.getWheelRotation()==1){
+					int y = scroll.getY();
+					if(y<0) {
+						scroll.setLocation(scroll.getX(),scroll.getY()+30); 
+					}
+				}else if(e.getWheelRotation()==-1) {
+					int height = scroll.getY()+scroll.getHeight();
+					if(height>getHeight()) {
+						scroll.setLocation(scroll.getX(),scroll.getY()-30);
+					}
+				}
+			}
+		});
+		add(scroll);
 	}
 	private void addInput() {
-		int count = getComponentCount();
+		int count = scroll.getComponentCount();
 		ContentText text = null;
 		int TextHeight = 0;
 		if(count==0) {
 			text = new ContentText();
 		}else {
-			Component[] components = getComponents();
+			Component[] components = scroll.getComponents();
 			for (int i = 0; i < components.length; i++) {
-				ContentText jp = (ContentText) components[i];
-				Component[] cs = jp.getComponents();
-				TextHeight = jp.getY()+jp.getHeight();
-				for (int j = 0; j < cs.length; j++) {
-					if(cs[j] instanceof JTextArea) {
-						JTextArea tja = (JTextArea)cs[j];
-						if(tja.getText().trim().isEmpty()) {
-							text = jp;
-							return;
+				if(components[i] instanceof ContentText) {
+					ContentText jp = (ContentText) components[i];
+					Component[] cs = jp.getComponents();
+					TextHeight = jp.getY()+jp.getHeight();
+					for (int j = 0; j < cs.length; j++) {
+						if(cs[j] instanceof JTextArea) {
+							JTextArea tja = (JTextArea)cs[j];
+							if(tja.getText().trim().isEmpty()) {
+								text = jp;
+								return;
+							}
 						}
 					}
 				}
@@ -84,7 +114,11 @@ public class TextPanel extends JPanel{
 		if(text==null) {
 			text = new ContentText();
 		}
-		text.setSize(getWidth()-20,30);
+		text.setSize(scroll.getWidth()-20,30);
+		if(TextHeight+30>=getHeight()) {
+			scroll.setSize(scroll.getWidth(),scroll.getHeight()+30);
+			scroll.setLocation(scroll.getX(),scroll.getY()-30);
+		}
 		text.setLocation(10,TextHeight);
 		text.setOpaque(false);
 		text.setLayout(null);
@@ -118,7 +152,7 @@ public class TextPanel extends JPanel{
 			public void mouseExited(MouseEvent e) {
 				funcPanel.setVisible(false);
 				if(input.getText().trim().isEmpty()) {
-					remove(text);
+					scroll.remove(text);
 				}
 			}
 			public void mouseEntered(MouseEvent e) {
@@ -129,9 +163,26 @@ public class TextPanel extends JPanel{
 				refresh();
 			}
 		});
+		input.addCaretListener(new CaretListener() {
+			
+			@Override
+			public void caretUpdate(CaretEvent e) {
+	            try {
+					int line = input.getLineOfOffset(input.getCaretPosition());
+					if(line!=0&&scroll.getY()+line*30==0) {
+		        		scroll.setLocation(scroll.getX(),scroll.getY()+30);
+		            }else if(line*30+text.getY()>getHeight()&&scroll.getY()+scroll.getHeight()>getHeight()) {
+		        		scroll.setLocation(scroll.getX(),scroll.getY()-30);
+		            }
+	            } catch (BadLocationException e1) {
+					e1.printStackTrace();
+				}
+
+			}
+		});
 		text.add(input);
-		text.setBorder(ComponentUtil.getBorder(Color.red));
-		add(text);
+		//add(text);
+		scroll.add(text);
 		input.requestFocus();
 		refresh();
 	}
@@ -143,6 +194,10 @@ public class TextPanel extends JPanel{
             Dimension size = new Dimension(getWidth()-20, Math.max(30,rect.y + rect.height));
             text.setSize(size);
             input.setSize(text.getWidth()-30,text.getHeight()); 
+            if(text.getY()+text.getHeight()>scroll.getHeight()) {
+            	scroll.setSize(scroll.getWidth(),scroll.getHeight()+30);
+        		scroll.setLocation(scroll.getX(),scroll.getY()-30);
+            }
             //输入时检测是否需要扩大大小
             checkJPanel(text);
         } catch (BadLocationException e1) {  
@@ -150,7 +205,7 @@ public class TextPanel extends JPanel{
         } 
 	}
 	private void checkJPanel(ContentText text) {
-		Component[] components = getComponents();
+		Component[] components = scroll.getComponents();
 		if(components.length>1) {
 			int index = 0;
 			if(text.isTop()) {
@@ -209,12 +264,12 @@ public class TextPanel extends JPanel{
 		}
 	}
 	private void refresh() {
-		setVisible(false);
-		setVisible(true);
+		scroll.setVisible(false);
+		scroll.setVisible(true);
 	}
 	public void refreshlSize(Dimension dimension) {
-		setSize(dimension.width-20,dimension.height);
-		for (Component c : getComponents()) {
+		setSize(dimension.width-20,dimension.height-80);
+		for (Component c : scroll.getComponents()) {
 			ContentText text = (ContentText)c;
 			for(Component component : text.getComponents()) {
 				if(component instanceof JTextArea) {
@@ -225,7 +280,7 @@ public class TextPanel extends JPanel{
 		}
 	}
 	public void remove(JPanel text) {
-		super.remove(text);
+		scroll.remove(text);
 		orderText();
 	}
 	public void orderText() {
@@ -247,7 +302,7 @@ public class TextPanel extends JPanel{
 		if(unpinTexts.size()==0) {
 			return;
 		}
-		Component[] components = getComponents();
+		Component[] components = scroll.getComponents();
 		unpinTexts = new ArrayList<>();
 		for (int i = 0; i < components.length; i++) {
 			ContentText ct = (ContentText) components[i];
@@ -271,5 +326,4 @@ public class TextPanel extends JPanel{
 	public void setTopTexts(List<Component> topTexts) {
 		this.topTexts = topTexts;
 	}
-	
 }
