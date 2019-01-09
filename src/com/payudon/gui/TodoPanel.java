@@ -37,7 +37,7 @@ import com.payudon.util.ComponentUtil;
 * @date 2019年1月7日 下午2:21:54 
 *  
 */
-public class TextPanel extends JPanel{
+public class TodoPanel extends JPanel{
 
 	/** 
 	* @Fields serialVersionUID : TODO(     ) 
@@ -46,8 +46,7 @@ public class TextPanel extends JPanel{
 	private JPanel scroll;
 	private List<Component> topTexts = new ArrayList<>();
 	private List<Component> unpinTexts = new ArrayList<>();
-	//private List<Component> hideTexts = new ArrayList<>();
-	public TextPanel(final MainJFrame frame) {
+	public TodoPanel(final MainJFrame frame) {
 		setOpaque(false);
 		setLocation(10, 60);
 		setSize(frame.getWidth()-20,frame.getHeight()-80);
@@ -299,9 +298,6 @@ public class TextPanel extends JPanel{
 		}
 	}
 	private void orderUnpinTexts(){
-		if(unpinTexts.size()==0) {
-			return;
-		}
 		Component[] components = scroll.getComponents();
 		unpinTexts = new ArrayList<>();
 		for (int i = 0; i < components.length; i++) {
@@ -309,6 +305,9 @@ public class TextPanel extends JPanel{
 			if(!ct.isTop()) {
 				unpinTexts.add(ct);
 			}
+		}
+		if(unpinTexts.size()==0) {
+			return;
 		}
 		if(unpinTexts.size()>0) {
 			Component firstText = unpinTexts.get(0);

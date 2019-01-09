@@ -43,9 +43,7 @@ public class FuncPanel extends JPanel{
 			public void mouseClicked(MouseEvent e) {
 				setVisible(true);
 				if(e.getButton()==1) {
-					//TextPanel textPanel= (TextPanel) e.getComponent().getParent().getParent().getParent();
-					TextPanel textPanel = (TextPanel) ComponentUtil.getParentToClass(e.getComponent(),TextPanel.class);
-					
+					TodoPanel textPanel = (TodoPanel) ComponentUtil.getParentToClass(e.getComponent(),TodoPanel.class);
 					ImageIcon icon = (ImageIcon) top.getIcon();
 					if(icon.toString().indexOf("top")!=-1) {
 						icon = new ImageIcon("src/img/unpin.png");
@@ -78,9 +76,12 @@ public class FuncPanel extends JPanel{
 		delete.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if(e.getButton()==1) {
-					 TextPanel textPanel= (TextPanel) e.getComponent().getParent().getParent().getParent();
-					 textPanel.remove(text);
-					 ComponentUtil.refresh(text);
+					TodoPanel textPanel= (TodoPanel) ComponentUtil.getParentToClass(e.getComponent(),TodoPanel.class);
+					if(text.isTop()) {
+						textPanel.getTopTexts().remove(text);
+					}
+					textPanel.remove(text);
+					ComponentUtil.refresh(text);
 				}
 			}
 			public void mouseEntered(MouseEvent e) {
@@ -94,7 +95,7 @@ public class FuncPanel extends JPanel{
 		setVisible(false);
 	}
 	
-	private void topText(TextPanel textPanel) {
+	private void topText(TodoPanel textPanel) {
 		if(text!=null) {
 			ImageIcon pointImg = new ImageIcon("src/img/point_y.png");
 			for (Component c : text.getComponents()) {
@@ -112,7 +113,7 @@ public class FuncPanel extends JPanel{
 			
 		}
 	}
-	private void unpinText(TextPanel textPanel) {
+	private void unpinText(TodoPanel textPanel) {
 		if(text!=null) {
 			ImageIcon pointImg = new ImageIcon("src/img/point.png");
 			for (Component c : text.getComponents()) {

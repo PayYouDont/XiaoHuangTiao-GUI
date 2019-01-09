@@ -26,7 +26,8 @@ public class MainPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
 	private JButton close;
 	private TopPanel topPanel;
-	private TextPanel textPanel;
+	private TodoPanel todoPanel;
+	private DonePanel donePanel;
 	private final MainJFrame frame;
 
 	public MainPanel(final MainJFrame frame) {
@@ -36,8 +37,10 @@ public class MainPanel extends JPanel{
 		initColseAndAddPanel();
 		topPanel = new TopPanel(frame);
 		add(topPanel);
-		textPanel = new TextPanel(frame);
-		add(textPanel);
+		todoPanel = new TodoPanel(frame);
+		add(todoPanel);
+		donePanel = new DonePanel(frame);
+		add(donePanel);
 	}
 	public void initColseAndAddPanel(){
 		Dimension topSize = frame.getSize();
@@ -76,7 +79,7 @@ public class MainPanel extends JPanel{
 		setVisible(true);
 	}
 	public void refreshlSize(Dimension dimension) {
-		textPanel.refreshlSize(dimension);
+		todoPanel.refreshlSize(dimension);
 		topPanel.refreshlSize(dimension);
 		close.setLocation(topPanel.getWidth()-25,5);
 		refresh();
@@ -90,6 +93,24 @@ public class MainPanel extends JPanel{
 
 	public void topPanelHide() {
 		topPanel.hideOrShow(false);
+	}
+	public TopPanel getTopPanel() {
+		return topPanel;
+	}
+	public void setTopPanel(TopPanel topPanel) {
+		this.topPanel = topPanel;
+	}
+	public TodoPanel getTodoPanel() {
+		return todoPanel;
+	}
+	public void setTodoPanel(TodoPanel todoPanel) {
+		this.todoPanel = todoPanel;
+	}
+	public DonePanel getDonePanel() {
+		return donePanel;
+	}
+	public void setDonePanel(DonePanel donePanel) {
+		this.donePanel = donePanel;
 	}
 	
 }
