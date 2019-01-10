@@ -7,6 +7,7 @@
 */
 package com.payudon.entity;
 
+import java.awt.Rectangle;
 import java.util.Date;
 
 /** 
@@ -26,7 +27,8 @@ public class Note {
 	private Integer status;
 	private boolean isTop;
 	private Date createTime;
-	private Date updateTime;
+	private Date completeTime;
+	private Rectangle areaRect;
 	public static final int STATUS_COMPLETE = 0;
 	public static final int STATUS_UNDONE = 1;
 	public Integer getId() {
@@ -59,16 +61,24 @@ public class Note {
 	public void setCreateTime(Date createTime) {
 		this.createTime = createTime;
 	}
-	public Date getUpdateTime() {
-		return updateTime;
+	
+	
+	public Date getCompleteTime() {
+		return completeTime;
 	}
-	public void setUpdateTime(Date updateTime) {
-		this.updateTime = updateTime;
+	public void setCompleteTime(Date completeTime) {
+		this.completeTime = completeTime;
+	}
+	public Rectangle getAreaRect() {
+		return areaRect;
+	}
+	public void setAreaRect(Rectangle areaRect) {
+		this.areaRect = areaRect;
 	}
 	@Override
 	public String toString() {
 		return "Note [id=" + id + ", text=" + text + ", status=" + status + ", isTop=" + isTop + ", createTime="
-				+ createTime + ", updateTime=" + updateTime + "]";
+				+ createTime + ", completeTime=" + completeTime + ", areaRect=" + areaRect + "]";
 	}
 	
 }

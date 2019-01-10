@@ -14,6 +14,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.payudon.entity.Note;
 import com.payudon.util.ComponentUtil;
 
 /** 
@@ -28,11 +29,11 @@ public class FuncDonePanel extends JPanel{
 	* @Fields serialVersionUID : TODO(     ) 
 	*/ 
 	private static final long serialVersionUID = 1L;
-	private ContentText text;
+	//private ContentText text;
 	public FuncDonePanel(ContentText text) {
-		this.text = text;
+		//this.text = text;
 		setSize(70,30);
-		setLocation(text.getSize().width-120,0);
+		setLocation(0,0);
 		setLocale(null);
 		setOpaque(false);
 		ImageIcon revokeImg = new ImageIcon("src/img/revoke.png");
@@ -42,7 +43,11 @@ public class FuncDonePanel extends JPanel{
 			public void mouseClicked(MouseEvent e) {
 				setVisible(true);
 				if(e.getButton()==1) {
-					System.out.println(e);
+					Note note = ComponentUtil.parseContentText(text);
+					MainPanel mainPanel= (MainPanel) ComponentUtil.getParentToClass(e.getComponent(),MainPanel.class);
+					mainPanel.getTodoPanel().addTodoText(note);
+					mainPanel.getDonePanel().remove(text,note);
+					ComponentUtil.refresh(mainPanel);
 				}
 			}
 			public void mouseEntered(MouseEvent e) {
@@ -52,18 +57,16 @@ public class FuncDonePanel extends JPanel{
 				 setVisible(false);
 			}
 		});
+		add(revoke);
 		ImageIcon deleteImg = new ImageIcon("src/img/delete.png");
 		JLabel delete = new JLabel(deleteImg);
 		delete.setBounds(30,0,25,25);
 		delete.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if(e.getButton()==1) {
-					TodoPanel textPanel= (TodoPanel) ComponentUtil.getParentToClass(e.getComponent(), TodoPanel.class);
-					 if(text.isTop()) {
-							textPanel.getTopTexts().remove(text);
-					 }
-					 textPanel.remove(text);
-					 ComponentUtil.refresh(text);
+					DonePanel donePanel= (DonePanel) ComponentUtil.getParentToClass(e.getComponent(), DonePanel.class);
+					donePanel.remove(text);
+					ComponentUtil.refresh(donePanel);
 				}
 			}
 			public void mouseEntered(MouseEvent e) {
@@ -76,4 +79,9 @@ public class FuncDonePanel extends JPanel{
 		add(delete);
 		setVisible(false);
 	}
+	public void refreshLocation(ContentText text) {
+		int y = ComponentUtil.getCompentByName(text, "input").getY();
+		setLocation(text.getSize().width-70,y);
+	}
+	
 }

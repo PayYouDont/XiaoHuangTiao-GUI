@@ -81,6 +81,7 @@ public class MainPanel extends JPanel{
 	public void refreshlSize(Dimension dimension) {
 		todoPanel.refreshlSize(dimension);
 		topPanel.refreshlSize(dimension);
+		donePanel.refreshlSize(dimension);
 		close.setLocation(topPanel.getWidth()-25,5);
 		refresh();
 	}

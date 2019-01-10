@@ -16,6 +16,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.payudon.util.ComponentUtil;
 import com.payudon.util.StyleUtil;
 
 /**
@@ -31,7 +32,7 @@ public class TopPanel extends JPanel {
 	 * @Fields serialVersionUID : TODO( )
 	 */
 	private static final long serialVersionUID = 1L;
-	private JLabel title;
+	private JLabel Todo;
 	private JLabel Done;
 	private JLabel lock;
 	private JLabel synchronize;
@@ -43,17 +44,38 @@ public class TopPanel extends JPanel {
 		setSize(topSize.width,60);
 		setOpaque(false);
 		// todo
-		title = new JLabel(StyleUtil.getLabelHtml("Todo", 22, true));
-		title.setName("todo");
-		title.setForeground(Color.white);
-		title.setBounds(30, 0, 100, 80);
-		add(title);
+		Todo = new JLabel(StyleUtil.getLabelHtml("Todo", 22, true));
+		Todo.setName("todo");
+		Todo.setForeground(Color.white);
+		Todo.setBounds(30, 0, 100, 80);
+		add(Todo);
 		// done
 		Done = new JLabel(StyleUtil.getLabelHtml("Done", 16, true));
 		Done.setName("done");
 		Done.setForeground(new Color(170, 170, 170));
 		Done.setBounds(120, 3, 100, 80);
 		Done.setVisible(false);
+		Done.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				hideOrShow(true);
+				if (e.getButton() == 1) {
+					MainPanel mainPanel = (MainPanel)ComponentUtil.getParentToClass(e.getComponent(), MainPanel.class);
+					String text = Done.getText();
+					if(text.indexOf("Done")!=-1) {
+						Done.setText(StyleUtil.getLabelHtml("Todo", 16, true));
+						Todo.setText(StyleUtil.getLabelHtml("Done", 22, true));
+						mainPanel.getTodoPanel().setVisible(false);
+						mainPanel.getDonePanel().setVisible(true);
+					}else {
+						Done.setText(StyleUtil.getLabelHtml("Done", 16, true));
+						Todo.setText(StyleUtil.getLabelHtml("Todo", 22, true));
+						mainPanel.getTodoPanel().setVisible(true);
+						mainPanel.getDonePanel().setVisible(false);
+					}
+					refresh();
+				}
+			}
+		});
 		add(Done);
 		// lock
 		ImageIcon lockImg = new ImageIcon("src/img/lock_up.png");

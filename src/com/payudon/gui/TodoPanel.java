@@ -28,6 +28,7 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
 
+import com.payudon.entity.Note;
 import com.payudon.util.ComponentUtil;
 
 /** 
@@ -70,22 +71,34 @@ public class TodoPanel extends JPanel{
 		});
 		scroll.addMouseWheelListener(new MouseAdapter() {
 			public void mouseWheelMoved(MouseWheelEvent e){
-				if(e.getWheelRotation()==1){
-					int y = scroll.getY();
-					if(y<0) {
-						scroll.setLocation(scroll.getX(),scroll.getY()+30); 
-					}
-				}else if(e.getWheelRotation()==-1) {
+				if(e.getWheelRotation()==1){//鼠标滚轮向后滑动
 					int height = scroll.getY()+scroll.getHeight();
 					if(height>getHeight()) {
 						scroll.setLocation(scroll.getX(),scroll.getY()-30);
+					}
+				}else if(e.getWheelRotation()==-1) {//鼠标滚轮向前滑动
+					int y = scroll.getY();
+					if(y<0) {
+						scroll.setLocation(scroll.getX(),scroll.getY()+30); 
 					}
 				}
 			}
 		});
 		add(scroll);
 	}
+	public void addTodoText(Note note) {
+		ContentText text = createContentText();
+		if(text!=null) {
+			addText(text,note);
+		}
+	}
 	private void addInput() {
+		ContentText text = createContentText();
+		if(text!=null) {
+			addText(text);
+		}
+	}
+	private ContentText createContentText() {
 		int count = scroll.getComponentCount();
 		ContentText text = null;
 		int TextHeight = 0;
@@ -103,7 +116,7 @@ public class TodoPanel extends JPanel{
 							JTextArea tja = (JTextArea)cs[j];
 							if(tja.getText().trim().isEmpty()) {
 								text = jp;
-								return;
+								return null;
 							}
 						}
 					}
@@ -121,7 +134,21 @@ public class TodoPanel extends JPanel{
 		text.setLocation(10,TextHeight);
 		text.setOpaque(false);
 		text.setLayout(null);
+		return text;
+	}
+	private void addText(ContentText text,Note note) {
 		addText(text);
+		for (Component component : text.getComponents()) {
+			if(component instanceof JTextArea) {
+				JTextArea input = (JTextArea)component;
+				input.setText(note.getText());
+				Rectangle rect = note.getAreaRect();  
+		        Dimension size = new Dimension(getWidth()-20, Math.max(30,rect.y + rect.height));
+		        text.setSize(size);
+		        input.setSize(text.getWidth()-30,text.getHeight()); 
+			}
+		}
+		refresh();
 	}
 	private void addText(ContentText text) {
 		FuncPanel funcPanel = new FuncPanel(text);
@@ -158,6 +185,7 @@ public class TodoPanel extends JPanel{
 				if(input.getText().trim().isEmpty()) {
 					return;
 				}
+				funcPanel.refreshLocation(text);
 				funcPanel.setVisible(true);
 				refresh();
 			}
@@ -268,6 +296,7 @@ public class TodoPanel extends JPanel{
 	}
 	public void refreshlSize(Dimension dimension) {
 		setSize(dimension.width-20,dimension.height-80);
+		scroll.setSize(getSize());
 		for (Component c : scroll.getComponents()) {
 			ContentText text = (ContentText)c;
 			for(Component component : text.getComponents()) {
@@ -278,7 +307,10 @@ public class TodoPanel extends JPanel{
 			}
 		}
 	}
-	public void remove(JPanel text) {
+	public void remove(ContentText text) {
+		if(text.isTop()) {
+			topTexts.remove(text);
+		}
 		scroll.remove(text);
 		orderText();
 	}
@@ -305,9 +337,6 @@ public class TodoPanel extends JPanel{
 			if(!ct.isTop()) {
 				unpinTexts.add(ct);
 			}
-		}
-		if(unpinTexts.size()==0) {
-			return;
 		}
 		if(unpinTexts.size()>0) {
 			Component firstText = unpinTexts.get(0);
