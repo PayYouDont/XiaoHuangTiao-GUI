@@ -29,21 +29,6 @@ public class ComponentUtil {
 		}
 		return null;
 	}
-	/*public static Component getCompentByType(JPanel panel,Class<? extends Component> clazz) {
-		Component[] components= panel.getComponents();
-		for (int i = 0; i < components.length; i++) {
-			Component c = components[i];
-			if(c.getClass()==clazz) {
-				return c;
-			}else if(c instanceof JPanel ) {
-				c = getCompentByType((JPanel)c, clazz);
-			}
-			if(c.getClass()==clazz) {
-				return c;
-			}
-		}
-		return null;
-	}*/
 	public static void refresh(Component componet) {
 		if(componet !=null) {
 			componet.setVisible(false);
@@ -54,15 +39,60 @@ public class ComponentUtil {
 		Border border = BorderFactory.createLineBorder(color);
 		return border;
 	}
-	public static Component getParentToClass(Component c,Class<? extends Component> clazz) {
-		while (c!=null&&c.getClass()!=clazz) {
+	@SuppressWarnings("unchecked")
+	public static <T> T getParentToClass(Component c,Class<T> type) {
+		while (c!=null) {
+			if(c.getClass()==type) {
+				return (T)c;
+			}
 			c = c.getParent();
-			if(c==null) {
-				break;
+		}
+		return null;
+	}
+	/*@SuppressWarnings("unchecked")
+	public static <T>List<T> getChildToClass(Component c,Class<T> type,List<T> list) {
+		Component[] Childern = null;
+		if(c instanceof JComponent) {
+			Childern = ((JPanel) c).getComponents();
+		}else if(c instanceof JFrame) {
+			Childern = ((JFrame) c).getComponents();
+		}
+		if(Childern!=null) {
+			for (int i = 0; i < Childern.length; i++) {
+				Component child = Childern[i];
+				if(child.getClass()==type) {
+					list.add((T)child);
+				}else {
+					getChildToClass(child, type,list);
+				}
 			}
 		}
-		return c;
+		return list;
 	}
+	@SuppressWarnings("unchecked")
+	public static <T>T getChildToClass(Component c,Class<T> type) {
+		if(c.getClass()==type) {
+			return (T)c;
+		}else {
+			Component[] Childern = null;
+			if(c instanceof JComponent) {
+				Childern = ((JPanel) c).getComponents();
+			}else if(c instanceof JFrame) {
+				Childern = ((JFrame) c).getComponents();
+			}
+			if(Childern!=null) {
+				for (int i = 0; i < Childern.length; i++) {
+					Component child = Childern[i];
+					if(child.getClass()==type) {
+						return (T)child;
+					}else {
+						getChildToClass(child, type);
+					}
+				}
+			}
+		}
+		return null;
+	}*/
 	public static Note parseContentText(ContentText text) {
 		Note note = new Note();
 		note.setTop(text.isTop());

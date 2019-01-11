@@ -5,6 +5,6 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry excluding="img/|img/|img/" kind="src" path="src"/>
+	<classpathentry excluding="img/|img/|img/|img/|img/" kind="src" path="src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

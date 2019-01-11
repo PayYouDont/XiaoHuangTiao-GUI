@@ -7,7 +7,6 @@
 */
 package com.payudon.gui;
 
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
@@ -15,7 +14,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.payudon.entity.Note;
+import com.payudon.listener.TopShowMouseAdapter;
 import com.payudon.util.ComponentUtil;
+import com.payudon.util.StyleUtil;
 
 /** 
 * @ClassName: FuncDonePanel 
@@ -29,21 +30,25 @@ public class FuncDonePanel extends JPanel{
 	* @Fields serialVersionUID : TODO(     ) 
 	*/ 
 	private static final long serialVersionUID = 1L;
-	//private ContentText text;
+	private class TopMouseListener extends TopShowMouseAdapter{}
 	public FuncDonePanel(ContentText text) {
 		//this.text = text;
 		setSize(70,30);
 		setLocation(0,0);
+		setName("funcDonePanel");
 		setLocale(null);
 		setOpaque(false);
-		ImageIcon revokeImg = new ImageIcon("src/img/revoke.png");
+		ImageIcon revokeImg = new ImageIcon(StyleUtil.getIconBasePath()+"revoke.png");
 		JLabel revoke = new JLabel(revokeImg);
-		revoke.setBounds(0,0,25,25);
-		revoke.addMouseListener(new MouseAdapter() {
+		revoke.setBounds(0,-2,25,25);
+		revoke.addMouseListener(new TopMouseListener() {
 			public void mouseClicked(MouseEvent e) {
 				setVisible(true);
 				if(e.getButton()==1) {
 					Note note = ComponentUtil.parseContentText(text);
+					if(note.getText().trim().isEmpty()) {
+			    		return;
+			    	}
 					MainPanel mainPanel= (MainPanel) ComponentUtil.getParentToClass(e.getComponent(),MainPanel.class);
 					mainPanel.getTodoPanel().addTodoText(note);
 					mainPanel.getDonePanel().remove(text,note);
@@ -51,29 +56,34 @@ public class FuncDonePanel extends JPanel{
 				}
 			}
 			public void mouseEntered(MouseEvent e) {
+				super.mouseEntered(e);
 				setVisible(true);
 			}
 			public void mouseExited(MouseEvent e) {
-				 setVisible(false);
+				super.mouseExited(e);
+				setVisible(false);
 			}
 		});
 		add(revoke);
-		ImageIcon deleteImg = new ImageIcon("src/img/delete.png");
+		ImageIcon deleteImg = new ImageIcon(StyleUtil.getIconBasePath()+"delete.png");
 		JLabel delete = new JLabel(deleteImg);
-		delete.setBounds(30,0,25,25);
-		delete.addMouseListener(new MouseAdapter() {
+		delete.setBounds(30,-2,25,25);
+		delete.addMouseListener(new TopMouseListener() {
 			public void mouseClicked(MouseEvent e) {
 				if(e.getButton()==1) {
+					Note note = ComponentUtil.parseContentText(text);
 					DonePanel donePanel= (DonePanel) ComponentUtil.getParentToClass(e.getComponent(), DonePanel.class);
-					donePanel.remove(text);
+					donePanel.remove(text,note);
 					ComponentUtil.refresh(donePanel);
 				}
 			}
 			public void mouseEntered(MouseEvent e) {
+				super.mouseEntered(e);
 				setVisible(true);
 			}
 			public void mouseExited(MouseEvent e) {
-				 setVisible(false);
+				super.mouseExited(e);
+				setVisible(false);
 			}
 		});
 		add(delete);

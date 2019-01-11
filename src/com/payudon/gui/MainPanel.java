@@ -15,6 +15,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import com.payudon.util.StyleUtil;
+
 /** 
 * @ClassName: MainPanel 
 * @Description: TODO(     ) 
@@ -34,6 +36,7 @@ public class MainPanel extends JPanel{
 		this.frame = frame;
 		setLayout(null);
 		setOpaque(false);
+		setName("mainPanel");
 		initColseAndAddPanel();
 		topPanel = new TopPanel(frame);
 		add(topPanel);
@@ -44,7 +47,7 @@ public class MainPanel extends JPanel{
 	}
 	public void initColseAndAddPanel(){
 		Dimension topSize = frame.getSize();
-		ImageIcon closeIcon = new ImageIcon("src/img/close.png");
+		ImageIcon closeIcon = new ImageIcon(StyleUtil.getIconBasePath()+"close.png");
 		close = new JButton(closeIcon);
 		close.setLocation(topSize.width-25,5);
 		close.setSize(20,20);
@@ -58,7 +61,7 @@ public class MainPanel extends JPanel{
 			}
 		});
 		add(close);
-		ImageIcon addIcon = new ImageIcon("src/img/add.png");
+		ImageIcon addIcon = new ImageIcon(StyleUtil.getIconBasePath()+"add.png");
 		JButton add = new JButton(addIcon);
 		add.setLocation(5,5);
 		add.setSize(20,20);
@@ -71,6 +74,7 @@ public class MainPanel extends JPanel{
 				}
 			}
 		});
+		add.grabFocus();
 		add(add);
 	}
 	

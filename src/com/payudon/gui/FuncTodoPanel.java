@@ -8,7 +8,6 @@
 package com.payudon.gui;
 
 import java.awt.Component;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
@@ -16,7 +15,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.payudon.entity.Note;
+import com.payudon.listener.TopShowMouseAdapter;
 import com.payudon.util.ComponentUtil;
+import com.payudon.util.StyleUtil;
 
 /** 
 * @ClassName: FuncPanel 
@@ -25,32 +26,34 @@ import com.payudon.util.ComponentUtil;
 * @date 2019年1月7日 下午2:16:38 
 *  
 */
-public class FuncPanel extends JPanel{
+public class FuncTodoPanel extends JPanel{
 	/** 
 	* @Fields serialVersionUID : TODO(     ) 
 	*/ 
 	private static final long serialVersionUID = 1L;
 	private ContentText text;
-	public FuncPanel(ContentText text) {
+	private class TopMouseListener extends TopShowMouseAdapter{}
+	public FuncTodoPanel(ContentText text) {
 		this.text = text;
 		setSize(100,30);
+		setName("funcTodoPanel");
 		setLocation(text.getSize().width-120,0);
 		setLocale(null);
 		setOpaque(false);
-		ImageIcon topImg = new ImageIcon("src/img/top.png");
+		ImageIcon topImg = new ImageIcon(StyleUtil.getIconBasePath()+"top.png");
 		JLabel top = new JLabel(topImg);
-		top.setBounds(0,0,100,100);
-		top.addMouseListener(new MouseAdapter() {
+		top.setBounds(0,-2,100,100);
+		top.addMouseListener(new TopMouseListener() {
 			public void mouseClicked(MouseEvent e) {
 				setVisible(true);
 				if(e.getButton()==1) {
 					TodoPanel textPanel = (TodoPanel) ComponentUtil.getParentToClass(e.getComponent(),TodoPanel.class);
 					ImageIcon icon = (ImageIcon) top.getIcon();
 					if(icon.toString().indexOf("top")!=-1) {
-						icon = new ImageIcon("src/img/unpin.png");
+						icon = new ImageIcon(StyleUtil.getIconBasePath()+"unpin.png");
 						topText(textPanel);
 					}else {
-						icon = new ImageIcon("src/img/top.png");
+						icon = new ImageIcon(StyleUtil.getIconBasePath()+"top.png");
 						unpinText(textPanel);
 					}
 					top.setIcon(icon);
@@ -60,37 +63,44 @@ public class FuncPanel extends JPanel{
 				}
 			}
 			public void mouseEntered(MouseEvent e) {
+				super.mouseEntered(e);
 				setVisible(true);
 			}
 			public void mouseExited(MouseEvent e) {
-				 setVisible(false);
+				super.mouseExited(e);
+				setVisible(false);
 			}
 		});
 		add(top);
-		ImageIcon hookImg = new ImageIcon("src/img/hook.png");
+		ImageIcon hookImg = new ImageIcon(StyleUtil.getIconBasePath()+"hook.png");
 		JLabel hook = new JLabel(hookImg);
-		hook.setBounds(30,0,100,100);
-		hook.addMouseListener(new MouseAdapter() {
+		hook.setBounds(30,-2,100,100);
+		hook.addMouseListener(new TopMouseListener() {
 			public void mouseClicked(MouseEvent e) {
 				if(e.getButton()==1) {
 					Note note = ComponentUtil.parseContentText(text);
+					if(note.getText().trim().isEmpty()) {
+			    		return;
+			    	}
 					MainPanel mainPanel= (MainPanel) ComponentUtil.getParentToClass(e.getComponent(),MainPanel.class);
 					mainPanel.getDonePanel().addDoneText(note);
 					mainPanel.getTodoPanel().remove(text);
 				}
 			}
 			public void mouseEntered(MouseEvent e) {
+				super.mouseEntered(e);
 				setVisible(true);
 			}
 			public void mouseExited(MouseEvent e) {
-				 setVisible(false);
+				super.mouseExited(e);
+				setVisible(false);
 			}
 		});
 		add(hook);
-		ImageIcon deleteImg = new ImageIcon("src/img/delete.png");
+		ImageIcon deleteImg = new ImageIcon(StyleUtil.getIconBasePath()+"delete.png");
 		JLabel delete = new JLabel(deleteImg);
-		delete.setBounds(60,0,100,100);
-		delete.addMouseListener(new MouseAdapter() {
+		delete.setBounds(60,-2,100,100);
+		delete.addMouseListener(new TopMouseListener() {
 			public void mouseClicked(MouseEvent e) {
 				if(e.getButton()==1) {
 					TodoPanel textPanel= (TodoPanel) ComponentUtil.getParentToClass(e.getComponent(),TodoPanel.class);
@@ -99,10 +109,12 @@ public class FuncPanel extends JPanel{
 				}
 			}
 			public void mouseEntered(MouseEvent e) {
+				super.mouseEntered(e);
 				setVisible(true);
 			}
 			public void mouseExited(MouseEvent e) {
-				 setVisible(false);
+				super.mouseExited(e);
+				setVisible(false);
 			}
 		});
 		add(delete);
@@ -110,7 +122,7 @@ public class FuncPanel extends JPanel{
 	}
 	private void topText(TodoPanel textPanel) {
 		if(text!=null) {
-			ImageIcon pointImg = new ImageIcon("src/img/point_y.png");
+			ImageIcon pointImg = new ImageIcon(StyleUtil.getIconBasePath()+"point_y.png");
 			for (Component c : text.getComponents()) {
 				if(c instanceof JLabel) {
 					JLabel point = (JLabel) c;
@@ -128,7 +140,7 @@ public class FuncPanel extends JPanel{
 	}
 	private void unpinText(TodoPanel textPanel) {
 		if(text!=null) {
-			ImageIcon pointImg = new ImageIcon("src/img/point.png");
+			ImageIcon pointImg = new ImageIcon(StyleUtil.getIconBasePath()+"point.png");
 			for (Component c : text.getComponents()) {
 				if(c instanceof JLabel) {
 					JLabel point = (JLabel) c;

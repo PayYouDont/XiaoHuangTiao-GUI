@@ -12,4 +12,7 @@ public class StyleUtil {
 		}
 		return "<html><font style=\"font-size:"+size+"px;\" face=\"verdana\">"+text+"</font></html>";
 	}
+	public static String getIconBasePath() {
+		return "src\\img\\";
+	}
 }

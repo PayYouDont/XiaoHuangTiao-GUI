@@ -12,7 +12,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Rectangle;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.text.SimpleDateFormat;
@@ -25,6 +24,7 @@ import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 
 import com.payudon.entity.Note;
+import com.payudon.listener.TopShowMouseAdapter;
 import com.payudon.util.ComponentUtil;
 import com.payudon.util.StyleUtil;
 
@@ -42,8 +42,10 @@ public class DonePanel extends JPanel{
 	*/ 
 	private static final long serialVersionUID = 1L;
 	private JPanel scroll;
+	private class InputMouseListener extends TopShowMouseAdapter{}
 	public DonePanel(final MainJFrame frame) {
 		setOpaque(false);
+		setName("donePanel");
 		setLocation(10, 60);
 		setSize(frame.getWidth()-20,frame.getHeight()-80);
 		setLayout(null);
@@ -52,7 +54,7 @@ public class DonePanel extends JPanel{
 		scroll.setOpaque(false);
 		scroll.setLocation(0,0);
 		scroll.setLayout(null);
-		scroll.addMouseWheelListener(new MouseAdapter() {
+		scroll.addMouseWheelListener(new TopShowMouseAdapter() {
 			public void mouseWheelMoved(MouseWheelEvent e){
 				if(e.getWheelRotation()==1){//滚轮向后滑动
 					int height = scroll.getY()+scroll.getHeight();
@@ -96,7 +98,7 @@ public class DonePanel extends JPanel{
 		FuncDonePanel funcPanel = new FuncDonePanel(text);
 		funcPanel.setName("funcPanel");
 		text.add(funcPanel);
-		ImageIcon pointImg = new ImageIcon("src/img/point.png");
+		ImageIcon pointImg = new ImageIcon(StyleUtil.getIconBasePath()+"point.png");
 		JLabel point = new JLabel(pointImg);
 		point.setSize(30,30);
 		point.setLocation(10,0);
@@ -104,15 +106,33 @@ public class DonePanel extends JPanel{
 		JTextArea input = new JTextArea(note.getText());
 		input.setName("input");
 		input.setOpaque(false);
-		input.addMouseListener(new MouseAdapter() {
+		input.addMouseListener(new InputMouseListener() {
 			public void mouseEntered(MouseEvent e) {
+				super.mouseEntered(e);
 				funcPanel.refreshLocation(text);
 				funcPanel.setVisible(true);
 				refresh();
 			}
 			public void mouseExited(MouseEvent e) {
+				super.mouseExited(e);
 				funcPanel.setVisible(false);
 
+			}
+			public void mouseClicked(MouseEvent e) {
+				if(e.getButton()==1) {
+					int clickTimes = e.getClickCount();
+				    if (clickTimes == 2) {
+				    	Note note = ComponentUtil.parseContentText(text);
+				    	if(note.getText().trim().isEmpty()) {
+				    		return;
+				    	}
+				    	MainPanel mainPanel= (MainPanel) ComponentUtil.getParentToClass(e.getComponent(),MainPanel.class);
+						mainPanel.getTodoPanel().addTodoText(note);
+						remove(text,note);
+						ComponentUtil.refresh(mainPanel);
+				    }
+					
+				}
 			}
 		});
 		Rectangle rect = note.getAreaRect();  
@@ -196,7 +216,12 @@ public class DonePanel extends JPanel{
 	}
 	private JPanel createDateLabel(Note note) {
 		Date noteDate = note.getCompleteTime();
-		String noteDateStr = new SimpleDateFormat("yyyy-MM-dd").format(noteDate);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String noteDateStr = sdf.format(noteDate);
+		Date now = new Date();
+		if(noteDateStr.equals(sdf.format(now))) {
+			noteDateStr = "今天";
+		}
 		if(scroll.getComponentCount()>0) {
 			for (Component datePanel : scroll.getComponents()) {
 				JPanel panel = (JPanel)datePanel;
@@ -213,7 +238,7 @@ public class DonePanel extends JPanel{
 		datePanel.setLocation(0,0);
 		datePanel.setLayout(null);
 		JLabel date = new JLabel(StyleUtil.getLabelHtml(noteDateStr,12,true));
-		date.setBounds(10, 0,120,20);
+		date.setBounds(20, 0,120,20);
 		date.setName("date");
 		date.setForeground(Color.white);
 		datePanel.add(date);

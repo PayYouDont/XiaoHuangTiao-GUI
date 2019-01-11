@@ -29,7 +29,9 @@ import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
 
 import com.payudon.entity.Note;
+import com.payudon.listener.TopShowMouseAdapter;
 import com.payudon.util.ComponentUtil;
+import com.payudon.util.StyleUtil;
 
 /** 
 * @ClassName: TextPanel 
@@ -47,9 +49,11 @@ public class TodoPanel extends JPanel{
 	private JPanel scroll;
 	private List<Component> topTexts = new ArrayList<>();
 	private List<Component> unpinTexts = new ArrayList<>();
+	private class InputMouseListener extends TopShowMouseAdapter{}
 	public TodoPanel(final MainJFrame frame) {
 		setOpaque(false);
 		setLocation(10, 60);
+		setName("todoPanel");
 		setSize(frame.getWidth()-20,frame.getHeight()-80);
 		setLayout(null);
 		scroll = new JPanel();
@@ -57,7 +61,7 @@ public class TodoPanel extends JPanel{
 		scroll.setOpaque(false);
 		scroll.setLocation(0,0);
 		scroll.setLayout(null);
-		scroll.addMouseListener(new MouseAdapter() {
+		scroll.addMouseListener(new InputMouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if(e.getButton()==1) {
@@ -66,6 +70,7 @@ public class TodoPanel extends JPanel{
 			}
 			@Override
 		    public void mouseEntered(MouseEvent e) {
+				super.mouseEntered(e);
 				refresh();
 			}
 		});
@@ -92,7 +97,7 @@ public class TodoPanel extends JPanel{
 			addText(text,note);
 		}
 	}
-	private void addInput() {
+	public void addInput() {
 		ContentText text = createContentText();
 		if(text!=null) {
 			addText(text);
@@ -151,10 +156,10 @@ public class TodoPanel extends JPanel{
 		refresh();
 	}
 	private void addText(ContentText text) {
-		FuncPanel funcPanel = new FuncPanel(text);
+		FuncTodoPanel funcPanel = new FuncTodoPanel(text);
 		funcPanel.setName("funcPanel");
 		text.add(funcPanel);
-		ImageIcon pointImg = new ImageIcon("src/img/point.png");
+		ImageIcon pointImg = new ImageIcon(StyleUtil.getIconBasePath()+"point.png");
 		JLabel point = new JLabel(pointImg);
 		point.setSize(30,30);
 		point.setLocation(10,0);
@@ -170,24 +175,47 @@ public class TodoPanel extends JPanel{
 		input.setCaretColor(Color.white);
 		input.addKeyListener(new KeyAdapter() {
 			@Override  
-            public void keyReleased(KeyEvent e) {  
+            public void keyReleased(KeyEvent e) {
+				if(e.getKeyCode()==10) {
+					try {
+						input.getDocument().remove(input.getText().length()-1,1);
+					} catch (BadLocationException e1) {
+						e1.printStackTrace();
+					}
+					addInput();
+				}
 				setJTextAreaSize(text, input);
             }  
 		});
-		input.addMouseListener(new MouseAdapter() {
+		input.addMouseListener(new InputMouseListener() {
+			public void mouseClicked(MouseEvent e) {
+				if(e.getButton()==1) {
+					int clickTimes = e.getClickCount();
+				    if (clickTimes == 2) {
+				    	Note note = ComponentUtil.parseContentText(text);
+				    	if(note.getText().trim().isEmpty()) {
+				    		return;
+				    	}
+						MainPanel mainPanel= (MainPanel) ComponentUtil.getParentToClass(e.getComponent(),MainPanel.class);
+						mainPanel.getDonePanel().addDoneText(note);
+						remove(text);
+				    }
+				}
+			}
 			public void mouseExited(MouseEvent e) {
+				super.mouseExited(e);
 				funcPanel.setVisible(false);
 				if(input.getText().trim().isEmpty()) {
 					scroll.remove(text);
 				}
 			}
 			public void mouseEntered(MouseEvent e) {
+				super.mouseEntered(e);
 				if(input.getText().trim().isEmpty()) {
 					return;
 				}
 				funcPanel.refreshLocation(text);
 				funcPanel.setVisible(true);
-				refresh();
 			}
 		});
 		input.addCaretListener(new CaretListener() {
@@ -208,13 +236,12 @@ public class TodoPanel extends JPanel{
 			}
 		});
 		text.add(input);
-		//add(text);
 		scroll.add(text);
 		input.requestFocus();
 		refresh();
 	}
 	private void setJTextAreaSize(ContentText text,JTextArea input) {
-		FuncPanel funcPanel = (FuncPanel) ComponentUtil.getCompentByName(text, "funcPanel");
+		FuncTodoPanel funcPanel = (FuncTodoPanel) ComponentUtil.getCompentByName(text, "funcPanel");
 		funcPanel.setVisible(false);
 		try {  
             Rectangle rect = input.modelToView(input.getText().length());  

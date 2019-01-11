@@ -9,13 +9,13 @@ package com.payudon.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.payudon.listener.TopShowMouseAdapter;
 import com.payudon.util.ComponentUtil;
 import com.payudon.util.StyleUtil;
 
@@ -37,12 +37,13 @@ public class TopPanel extends JPanel {
 	private JLabel lock;
 	private JLabel synchronize;
 	private JLabel setting;
-
+	private class TopMouseListener extends TopShowMouseAdapter{}
 	public TopPanel(final MainJFrame frame) {
 		Dimension topSize = frame.getSize();
 		setLayout(null);
 		setSize(topSize.width,60);
 		setOpaque(false);
+		setName("topPanel");
 		// todo
 		Todo = new JLabel(StyleUtil.getLabelHtml("Todo", 22, true));
 		Todo.setName("todo");
@@ -55,7 +56,7 @@ public class TopPanel extends JPanel {
 		Done.setForeground(new Color(170, 170, 170));
 		Done.setBounds(120, 3, 100, 80);
 		Done.setVisible(false);
-		Done.addMouseListener(new MouseAdapter() {
+		Done.addMouseListener(new TopMouseListener() {
 			public void mouseClicked(MouseEvent e) {
 				hideOrShow(true);
 				if (e.getButton() == 1) {
@@ -78,38 +79,32 @@ public class TopPanel extends JPanel {
 		});
 		add(Done);
 		// lock
-		ImageIcon lockImg = new ImageIcon("src/img/lock_up.png");
+		ImageIcon lockImg = new ImageIcon(StyleUtil.getIconBasePath()+"lock_up.png");
 		lock = new JLabel(lockImg);
 		lock.setName("lock");
 		lock.setSize(30, 30);
 		lock.setLocation(topSize.width - 115, 25);
 		lock.setVisible(false);
-		lock.addMouseListener(new MouseAdapter() {
+		lock.addMouseListener(new TopMouseListener() {
 			public void mouseClicked(MouseEvent e) {
 				hideOrShow(true);
 				if (e.getButton() == 1) {
 					ImageIcon icon = (ImageIcon) lock.getIcon();
 					if (icon.toString().indexOf("lock_down") != -1) {
-						icon = new ImageIcon("src/img/lock_up.png");
+						icon = new ImageIcon(StyleUtil.getIconBasePath()+"lock_up.png");
 						frame.notFixed();
 					} else {
-						icon = new ImageIcon("src/img/lock_down.png");
+						icon = new ImageIcon(StyleUtil.getIconBasePath()+"lock_down.png");
 						frame.fixed();
 					}
 					lock.setIcon(icon);
 					refresh();
 				}
 			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				hideOrShow(true);
-				refresh();
-			}
 		});
 		add(lock);
 		// synchronize
-		ImageIcon synchronizeImg = new ImageIcon("src/img/synchronize.png");
+		ImageIcon synchronizeImg = new ImageIcon(StyleUtil.getIconBasePath()+"synchronize.png");
 		synchronize = new JLabel(synchronizeImg);
 		synchronize.setName("synchronize");
 		synchronize.setSize(30, 30);
@@ -117,7 +112,7 @@ public class TopPanel extends JPanel {
 		synchronize.setVisible(false);
 		add(synchronize);
 		// setting
-		ImageIcon settingImg = new ImageIcon("src/img/setting.png");
+		ImageIcon settingImg = new ImageIcon(StyleUtil.getIconBasePath()+"setting.png");
 		setting = new JLabel(settingImg);
 		setting.setName("setting");
 		setting.setSize(30, 30);
