@@ -54,7 +54,7 @@ public class TopPanel extends JPanel {
 		Done = new JLabel(StyleUtil.getLabelHtml("Done", 16, true));
 		Done.setName("done");
 		Done.setForeground(new Color(170, 170, 170));
-		Done.setBounds(120, 3, 100, 80);
+		Done.setBounds(120,28,70, 30);
 		Done.setVisible(false);
 		Done.addMouseListener(new TopMouseListener() {
 			public void mouseClicked(MouseEvent e) {
@@ -118,6 +118,17 @@ public class TopPanel extends JPanel {
 		setting.setSize(30, 30);
 		setting.setLocation(topSize.width - 55, 25);
 		setting.setVisible(false);
+		setting.addMouseListener(new TopMouseListener() {
+			public void mouseClicked(MouseEvent e) {
+				if(e.getButton()==1) {
+					System.out.println(SettingFrame.isShow);
+					if(!SettingFrame.isShow) {
+						new SettingFrame();
+						SettingFrame.isShow = true;
+					}
+				}
+			}
+		});
 		add(setting);
 	}
 
