@@ -121,10 +121,10 @@ public class TopPanel extends JPanel {
 		setting.addMouseListener(new TopMouseListener() {
 			public void mouseClicked(MouseEvent e) {
 				if(e.getButton()==1) {
-					System.out.println(SettingFrame.isShow);
-					if(!SettingFrame.isShow) {
-						new SettingFrame();
-						SettingFrame.isShow = true;
+					if(!SettingDialog.isShow) {
+						MainJFrame mainJFrame = (MainJFrame)ComponentUtil.getParentToClass(e.getComponent(), MainJFrame.class);
+						new SettingDialog(mainJFrame);
+						SettingDialog.isShow = true;
 					}
 				}
 			}

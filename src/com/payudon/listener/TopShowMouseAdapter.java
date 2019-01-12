@@ -29,10 +29,16 @@ public abstract class TopShowMouseAdapter extends MouseAdapter{
     	MainJFrame mainJFrame = ComponentUtil.getParentToClass(c, MainJFrame.class);
     	mainPanel = (MainPanel) mainJFrame.getContentPane();
     	mainPanel.topPanelShow();
+    	if(mainPanel.hasBorder()) {
+    		mainPanel.BorderShow();
+    	}
     }
     public void mouseExited(MouseEvent e) {
     	if(mainPanel!=null) {
     		mainPanel.topPanelHide();
+    	}
+    	if(mainPanel.hasBorder()) {
+    		mainPanel.BorderHide();
     	}
     }
 }

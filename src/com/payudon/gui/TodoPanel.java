@@ -49,6 +49,8 @@ public class TodoPanel extends JPanel{
 	private JPanel scroll;
 	private List<Component> topTexts = new ArrayList<>();
 	private List<Component> unpinTexts = new ArrayList<>();
+	private Font font = new Font(null, 0, 20);
+	private Color inputColor = Color.white;
 	private class InputMouseListener extends TopShowMouseAdapter{}
 	public TodoPanel(final MainJFrame frame) {
 		setOpaque(false);
@@ -165,14 +167,15 @@ public class TodoPanel extends JPanel{
 		point.setLocation(10,0);
 		text.add(point);
 		JTextArea input = new JTextArea();
+		input.setName("input");
 		input.setOpaque(false);
 		input.setSize(text.getWidth()-30,text.getHeight());
 		input.setLocation(35,0);
-		input.setFont(new Font(null, 0, 20));
-		input.setForeground(Color.white);
+		input.setFont(font);
+		input.setForeground(inputColor);
 		input.setLineWrap(true);
 		input.setWrapStyleWord(true);
-		input.setCaretColor(Color.white);
+		input.setCaretColor(inputColor);
 		input.addKeyListener(new KeyAdapter() {
 			@Override  
             public void keyReleased(KeyEvent e) {
@@ -380,5 +383,35 @@ public class TodoPanel extends JPanel{
 	}
 	public void setTopTexts(List<Component> topTexts) {
 		this.topTexts = topTexts;
+	}
+	public void setInputFontSize(Integer size) {
+		Font font = getFont();
+		Font newFont = new Font(font.getFontName(),font.getStyle(), size);
+		setInputFont(newFont);
+	}
+	public void setInputFont(Font font) {
+		this.font = font;
+		Component[] texts = scroll.getComponents();
+		for (int i = 0; i < texts.length; i++) {
+			ContentText text = (ContentText) texts[i];
+			JTextArea jta = (JTextArea) ComponentUtil.getCompentByName(text,"input");
+			jta.setFont(font);
+		}
+	}
+	public Font getInputFont() {
+		return font;
+	}
+	public void setInputColor(Color color) {
+		this.inputColor = color;
+		Component[] texts = scroll.getComponents();
+		for (int i = 0; i < texts.length; i++) {
+			ContentText text = (ContentText) texts[i];
+			JTextArea jta = (JTextArea) ComponentUtil.getCompentByName(text,"input");
+			jta.setForeground(color);
+			jta.setCaretColor(inputColor);
+		}
+	}
+	public Color getInputColor() {
+		return inputColor;
 	}
 }

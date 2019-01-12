@@ -40,9 +40,6 @@ public class MoveWindowListener extends MouseAdapter {
 	@Override
 	public void mousePressed(MouseEvent e) {
 		lastPoint = e.getLocationOnScreen();
-		if(e.getButton()==3) {
-			System.out.println(e);
-		}
 	}
 
 	@Override

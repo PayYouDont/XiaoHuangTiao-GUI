@@ -7,14 +7,16 @@
 */
 package com.payudon.gui;
 
+import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import com.payudon.listener.TopShowMouseAdapter;
+import com.payudon.util.ComponentUtil;
 import com.payudon.util.StyleUtil;
 
 /** 
@@ -27,11 +29,11 @@ import com.payudon.util.StyleUtil;
 public class MainPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
 	private JButton close;
+	private JButton add;
 	private TopPanel topPanel;
 	private TodoPanel todoPanel;
 	private DonePanel donePanel;
 	private final MainJFrame frame;
-
 	public MainPanel(final MainJFrame frame) {
 		this.frame = frame;
 		setLayout(null);
@@ -53,7 +55,7 @@ public class MainPanel extends JPanel{
 		close.setSize(20,20);
 		close.setContentAreaFilled(false);//不绘制按钮区域
 		close.setBorderPainted(false);//不绘制边框
-		close.addMouseListener(new MouseAdapter() {
+		close.addMouseListener(new TopShowMouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if(e.getButton()==1) {
 					close();
@@ -62,12 +64,12 @@ public class MainPanel extends JPanel{
 		});
 		add(close);
 		ImageIcon addIcon = new ImageIcon(StyleUtil.getIconBasePath()+"add.png");
-		JButton add = new JButton(addIcon);
+		add = new JButton(addIcon);
 		add.setLocation(5,5);
 		add.setSize(20,20);
 		add.setContentAreaFilled(false);//不绘制按钮区域
 		add.setBorderPainted(false);//不绘制边框
-		add.addMouseListener(new MouseAdapter() {
+		add.addMouseListener(new TopShowMouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if(e.getButton()==1) {
 					new MainJFrame();
@@ -99,6 +101,18 @@ public class MainPanel extends JPanel{
 	public void topPanelHide() {
 		topPanel.hideOrShow(false);
 	}
+	public void BorderHide() {
+		setBorder(ComponentUtil.getBorder(new Color(0,0,0,0)));
+		close.setVisible(false);
+		add.setVisible(false);
+	}
+	public void BorderShow() {
+		setBorder(ComponentUtil.getBorder(Color.white));
+		close.setVisible(true);
+		add.setVisible(true);
+	}
+	
+	
 	public TopPanel getTopPanel() {
 		return topPanel;
 	}
@@ -116,6 +130,9 @@ public class MainPanel extends JPanel{
 	}
 	public void setDonePanel(DonePanel donePanel) {
 		this.donePanel = donePanel;
+	}
+	public boolean hasBorder() {
+		return getBorder()!=null&&getBorder().isBorderOpaque();
 	}
 	
 }

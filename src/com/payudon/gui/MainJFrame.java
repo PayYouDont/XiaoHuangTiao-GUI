@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 import com.payudon.listener.MoveWindowListener;
+import com.payudon.listener.TopShowMouseAdapter;
 
 /** 
 * @ClassName: HttpSendJFrame 
@@ -58,5 +59,6 @@ public class MainJFrame extends JFrame{
 		// Frame在窗体居中
 		setLocationRelativeTo(null); 
 		addMouseAdapterListener(moveWindowListener);
+		addMouseListener(new TopShowMouseAdapter() {});
 	}
 }
