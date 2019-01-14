@@ -16,13 +16,9 @@ public class StyleUtil {
 		return "src\\img\\";
 	}
 	public static String getLabelHtmlText(String labelHtml) {
-		if(labelHtml==null) {
+		if(labelHtml==null||labelHtml.trim().isEmpty()||labelHtml.indexOf("<html>")==-1) {
 			return null;
-		}
-		if(labelHtml.trim().isEmpty()||labelHtml.indexOf("<html>")==-1) {
-			return null;
-		}
-		if(labelHtml.indexOf("</b>")==-1) {
+		}else if(labelHtml.indexOf("</b>")==-1) {
 			return labelHtml.substring(labelHtml.indexOf("face=\"verdana\">")+15,labelHtml.indexOf("</font>"));
 		}else {
 			return labelHtml.substring(labelHtml.indexOf("<b>")+4,labelHtml.indexOf("</b>"));

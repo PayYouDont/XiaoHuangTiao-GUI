@@ -13,20 +13,21 @@ import java.awt.Font;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JRootPane;
-import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import com.payudon.listener.MoveListener;
@@ -50,7 +51,7 @@ public class SettingDialog extends JDialog{
 	public static boolean isLogin = false;
 	String[] fontSizes = {"14","16","18","20","22","24"};
 	String[] fontSpacings = {"1","2","3","4","5"};
-	private final JFrame parentFrame;
+	private final MainJFrame parentFrame;
 	private final MoveListener moveListener= new MoveListener();
 	static {
 		try {
@@ -59,7 +60,7 @@ public class SettingDialog extends JDialog{
 			e.printStackTrace();
 		}
 	}
-	public SettingDialog(JFrame parentFrame) {
+	public SettingDialog(MainJFrame parentFrame) {
 		this.parentFrame = parentFrame;
 		parentFrame.setEnabled(false);
 		setLayout(null);
@@ -89,6 +90,7 @@ public class SettingDialog extends JDialog{
 			}
 		});
 		add(close);
+		close.setEnabled(false);
 	}
 	public void addMoveListener() {
 		addMouseListener(moveListener);
@@ -160,8 +162,8 @@ public class SettingDialog extends JDialog{
 		col2.addItemListener(new CheckListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
+				super.itemStateChanged(e);
 				if(e.getStateChange()==1) {
-					super.itemStateChanged(e);
 					parentFrame.setAlwaysOnTop(false);
 					parentFrame.setBackground(new Color(0,0,0,129));
 				}
@@ -176,8 +178,8 @@ public class SettingDialog extends JDialog{
 		col3.addItemListener(new CheckListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
+				super.itemStateChanged(e);
 				if(e.getStateChange()==1) {
-					super.itemStateChanged(e);
 					parentFrame.setAlwaysOnTop(false);
 					parentFrame.setBackground(new Color(0,0,0,130));
 				}
@@ -190,8 +192,8 @@ public class SettingDialog extends JDialog{
 		col4.addItemListener(new CheckListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
+				super.itemStateChanged(e);
 				if(e.getStateChange()==1) {
-					super.itemStateChanged(e);
 					parentFrame.setAlwaysOnTop(true);
 					parentFrame.setBackground(new Color(0,0,0,130));
 				}
@@ -220,8 +222,8 @@ public class SettingDialog extends JDialog{
 		col2.addItemListener(new CheckListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
+				super.itemStateChanged(e);
 				if(e.getStateChange()==1) {
-					super.itemStateChanged(e);
 					parentFrame.setBackground(new Color(0,0,0,1));
 					mainPanel.BorderHide();
 				}
@@ -234,8 +236,8 @@ public class SettingDialog extends JDialog{
 		col3.addItemListener(new CheckListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
+				super.itemStateChanged(e);
 				if(e.getStateChange()==1) {
-					super.itemStateChanged(e);
 					parentFrame.setBackground(new Color(0,0,0,130));
 					mainPanel.setBorder(null);
 				}
@@ -269,7 +271,7 @@ public class SettingDialog extends JDialog{
 					col2.getLabel().setText(sizeStr);
 					col2.refresh();
 					Integer size = new Integer(StyleUtil.getLabelHtmlText(sizeStr));
-					todoPanel.setInputFontSize(size);
+					mainPanel.setFontSize(size);
 				}
 			}
 		});
@@ -299,7 +301,7 @@ public class SettingDialog extends JDialog{
 			public void mouseClicked(MouseEvent e) {
 				Color bgColor = JColorChooser.showDialog(panel,"",panel.getBackground());
 				panel.setBackground(bgColor);
-				todoPanel.setInputColor(bgColor);
+				mainPanel.setColor(bgColor);
 			}
 		});
 		JLabel arrow = col6.getArrow();
@@ -307,7 +309,7 @@ public class SettingDialog extends JDialog{
 			public void mouseClicked(MouseEvent e) {
 				Color bgColor = JColorChooser.showDialog(panel,"",panel.getBackground());
 				panel.setBackground(bgColor);
-				todoPanel.setInputColor(bgColor);
+				mainPanel.setColor(bgColor);
 			}
 		});
 		row.add(col1);
@@ -361,11 +363,31 @@ public class SettingDialog extends JDialog{
 		label.setSize(col4.getWidth(),col4.getHeight());
 		label.setLocation(10,0);
 		label.requestFocus();
-		JTextField text = new JTextField();
-		text.setOpaque(false);
-		col4.add(text);
+		if(parentFrame.getHideKeyCode()!=null) {
+			Integer hideCode = parentFrame.getHideKeyCode();
+			label.setText(StyleUtil.getLabelHtml(KeyEvent.getKeyText(hideCode),14,true));
+		}
 		col4.add(label);
-		
+		col4.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				col4.requestFocus();
+			}
+		});
+		col4.addKeyListener(new KeyAdapter() {
+			public void keyPressed(KeyEvent e) {
+				int code = e.getKeyCode();
+				if(code>110&&code<124) {
+					label.setText(StyleUtil.getLabelHtml(KeyEvent.getKeyText(code),14,true));
+				}else {
+					label.setText(StyleUtil.getLabelHtml("点击设置快捷键",14,true));
+				}
+				col4.setVisible(false);
+				col4.setVisible(true);
+				parentFrame.hideByKey(code);
+			}
+			
+		});
 		row.add(col1);
 		row.add(col2);
 		row.add(col3);
@@ -381,22 +403,28 @@ public class SettingDialog extends JDialog{
 		col1.addItemListener(new CheckListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange()==1) {
-					super.itemStateChanged(e);
+				super.itemStateChanged(e);
+				boolean isStartAtLogon = ((JRadioButton)e.getSource()).isSelected();
+				try {
+					parentFrame.changeStart(isStartAtLogon);
+				} catch (IOException e1) {
+					e1.printStackTrace();
 				}
 			}
 		});
+		col1.setSelected(parentFrame.startAtLogon());
 		JRadioButton col2 = getCheck(StyleUtil.getLabelHtml("贴近边缘自动隐藏界面",16, true));
 		col2.setSize(300,40);
 		col2.setLocation(row.getWidth()*2/6,0);
 		col2.addItemListener(new CheckListener() {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
-				if(e.getStateChange()==1) {
-					super.itemStateChanged(e);
-				}
+				super.itemStateChanged(e);
+				boolean isAutoHide = ((JRadioButton)e.getSource()).isSelected();
+				parentFrame.isWindowAutoHide(isAutoHide);
 			}
 		});
+		col2.setSelected(parentFrame.autoHide());
 		row.add(col1);
 		row.add(col2);
 		return row;

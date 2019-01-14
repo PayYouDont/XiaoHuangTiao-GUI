@@ -181,7 +181,7 @@ public class TodoPanel extends JPanel{
             public void keyReleased(KeyEvent e) {
 				if(e.getKeyCode()==10) {
 					try {
-						input.getDocument().remove(input.getText().length()-1,1);
+						input.getDocument().remove(input.getCaret().getMark()-1,1);
 					} catch (BadLocationException e1) {
 						e1.printStackTrace();
 					}

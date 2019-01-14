@@ -43,6 +43,8 @@ public class DonePanel extends JPanel{
 	private static final long serialVersionUID = 1L;
 	private JPanel scroll;
 	private class InputMouseListener extends TopShowMouseAdapter{}
+	private Color inputColor = Color.white;
+	private Font font = new Font(null, 0, 20);
 	public DonePanel(final MainJFrame frame) {
 		setOpaque(false);
 		setName("donePanel");
@@ -141,8 +143,8 @@ public class DonePanel extends JPanel{
         textPanel.setSize(size.width,textPanel.getHeight()+text.getHeight());
         input.setSize(text.getWidth()-30,text.getHeight()); 
 		input.setLocation(35,0);
-		input.setFont(new Font(null, 0, 20));
-		input.setForeground(Color.white);
+		input.setFont(font);
+		input.setForeground(inputColor);
 		input.setLineWrap(true);
 		input.setWrapStyleWord(true);
 		input.setEditable(false);
@@ -244,5 +246,49 @@ public class DonePanel extends JPanel{
 		datePanel.add(date);
 		scroll.add(datePanel);
 		return datePanel;
+	}
+	public void setInputColor(Color color) {
+		this.inputColor = color;
+		Component[] datePanels = scroll.getComponents();
+		for (int i = 0; i < datePanels.length; i++) {
+			JPanel datePanel = (JPanel) datePanels[i];
+			Component[] texts = datePanel.getComponents();
+			for (int j = 0; j < texts.length; j++) {
+				if(texts[j] instanceof ContentText) {
+					ContentText text = (ContentText) texts[j];
+					JTextArea jta = (JTextArea) ComponentUtil.getCompentByName(text,"input");
+					jta.setForeground(color);
+					jta.setCaretColor(color);
+				}
+				
+			}
+		}
+	}
+	public Color getInputColor() {
+		return inputColor;
+	}
+	public void setInputFontSize(Integer size) {
+		Font font = getFont();
+		Font newFont = new Font(font.getFontName(),font.getStyle(), size);
+		setInputFont(newFont);
+	}
+	public void setInputFont(Font font) {
+		this.font = font;
+		Component[] datePanels = scroll.getComponents();
+		for (int i = 0; i < datePanels.length; i++) {
+			JPanel datePanel = (JPanel) datePanels[i];
+			Component[] texts = datePanel.getComponents();
+			for (int j = 0; j < texts.length; j++) {
+				if(texts[j] instanceof ContentText) {
+					ContentText text = (ContentText) texts[i];
+					JTextArea jta = (JTextArea) ComponentUtil.getCompentByName(text,"input");
+					jta.setFont(font);
+				}
+				
+			}
+		}
+	}
+	public Font getInputFont() {
+		return font;
 	}
 }

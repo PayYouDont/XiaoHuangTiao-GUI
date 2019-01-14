@@ -55,6 +55,7 @@ public class MainPanel extends JPanel{
 		close.setSize(20,20);
 		close.setContentAreaFilled(false);//不绘制按钮区域
 		close.setBorderPainted(false);//不绘制边框
+		close.setEnabled(false);
 		close.addMouseListener(new TopShowMouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
 				if(e.getButton()==1) {
@@ -67,6 +68,7 @@ public class MainPanel extends JPanel{
 		add = new JButton(addIcon);
 		add.setLocation(5,5);
 		add.setSize(20,20);
+		add.setEnabled(false);
 		add.setContentAreaFilled(false);//不绘制按钮区域
 		add.setBorderPainted(false);//不绘制边框
 		add.addMouseListener(new TopShowMouseAdapter() {
@@ -111,8 +113,14 @@ public class MainPanel extends JPanel{
 		close.setVisible(true);
 		add.setVisible(true);
 	}
-	
-	
+	public void setFontSize(Integer size) {
+		todoPanel.setInputFontSize(size);
+		donePanel.setInputFontSize(size);
+	}
+	public void setColor(Color color) {
+		todoPanel.setInputColor(color);
+		donePanel.setInputColor(color);
+	}
 	public TopPanel getTopPanel() {
 		return topPanel;
 	}
